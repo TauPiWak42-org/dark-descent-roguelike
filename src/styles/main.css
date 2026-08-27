@@ -20,10 +20,73 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-#game-container {
-  position: relative;
+/* Loading Screen */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  background: #0a0a1a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.5s ease-out;
+}
+
+#loading-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#loading-content {
+  text-align: center;
+  color: var(--gold-light);
+}
+
+#loading-content h1 {
+  font-size: 3rem;
+  font-family: 'Georgia', serif;
+  text-shadow: 0 0 20px var(--gold-glow);
+  margin-bottom: 10px;
+  letter-spacing: 3px;
+}
+
+#loading-content p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.8;
+}
+
+#loading-bar {
+  width: 300px;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--gold-primary);
+  border-radius: 5px;
+  margin: 0 auto 15px;
+  overflow: hidden;
+}
+
+#loading-progress {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold-primary), var(--gold-light));
+  transition: width 0.3s ease-out;
+}
+
+#loading-text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+#game-container {
+  display: none;
+}
+
+#game-container.loaded {
+  display: block;
 }
 
 #game-canvas {
@@ -46,7 +109,7 @@ body {
   z-index: 10;
 }
 
-/* Анимация появления */
+/* 103d383c3046384f 3f3e4f323b353d384f */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -60,7 +123,7 @@ body {
   animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Скроллбар */
+/* 213a403e3b3b313040 */
 ::-webkit-scrollbar {
   width: 10px;
 }

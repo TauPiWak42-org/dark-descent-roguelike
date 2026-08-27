@@ -2,8 +2,8 @@ import { EventSystem } from './EventSystem.js';
 import { GameLoop } from './GameLoop.js';
 
 /**
- * Главный класс игры
- * Управляет состоянием игры и координирует все системы
+ * \u000413\u00043b\u000430\u000432\u00043d\u00044b\u000439 \u00043a\u00043b\u000430\u000441\u000441 \u000438\u000433\u000440\u00044b
+ * \u000423\u00043f\u000440\u000430\u000432\u00043b\u00044f\u000435\u000442 \u000441\u00043e\u000441\u000442\u00043e\u00044f\u00043d\u000438\u000435\u00043c \u000438\u000433\u000440\u00044b \u000438 \u00043a\u00043e\u00043e\u000440\u000434\u000438\u00043d\u000438\u000440\u000443\u000435\u000442 \u000441\u000438\u000441\u000442\u000435\u00043c\u00044b 32\u000441\u000435 \u000441\u000438\u000441\u000442\u000435\u00043c\u000430\u00043c\u000438
  * @class Game
  */
 export class Game {
@@ -24,7 +24,7 @@ export class Game {
   }
 
   /**
-   * Настройка canvas
+   * \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 canvas
    * @private
    */
   setupCanvas() {
@@ -33,7 +33,7 @@ export class Game {
   }
 
   /**
-   * Изменение размера canvas
+   * \u000418\u000437\u00043c\u000435\u00043d\u000435\u00043d\u000438\u000435 \u000440\u000430\u000437\u00043c\u000435\u000440\u000430 canvas
    */
   resize() {
     this.width = window.innerWidth;
@@ -45,7 +45,7 @@ export class Game {
   }
 
   /**
-   * Настройка игрового цикла
+   * \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000438\u000433\u000440\u00043e\u000432\u00043e\u000433\u00043e \u000446\u000438\u00043a\u00043b
    * @private
    */
   setupGameLoop() {
@@ -56,7 +56,7 @@ export class Game {
   }
 
   /**
-   * Настройка слушателей событий
+   * \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000435\u000439 \u000441\u00043e\u000431\u00044b\u000442\u000438\u000439
    * @private
    */
   setupEventListeners() {
@@ -73,7 +73,7 @@ export class Game {
   }
 
   /**
-   * Запуск игры
+   * \u000417\u000430\u00043f\u000443\u000441\u00043a \u000438\u000433\u000440\u00044b
    */
   start() {
     this.state = 'playing';
@@ -83,8 +83,8 @@ export class Game {
   }
 
   /**
-   * Обновление логики игры
-   * @param {number} deltaTime - Время с прошлого кадра в секундах
+   * \u00041e\u000431\u00043d\u00043e\u000432\u00043b\u000435\u00043d\u000438\u000435 \u00043b\u00043e\u000433\u000438\u00043a\u000430 \u000438\u000433\u000440\u00044b
+   * @param {number} deltaTime - \u000412\u000440\u000435\u00043c\u00044f \u000441 \u00043f\u000440\u00043e\u000448\u00043b\u00043e\u000433\u00043e \u00043a\u000430\u000434\u000440\u000430 \u000432 \u000441\u000435\u00043a\u000443\u00043d\u000434\u000430\u000445
    */
   update(deltaTime) {
     if (this.state !== 'playing') return;
@@ -93,77 +93,133 @@ export class Game {
   }
 
   /**
-   * Отрисовка игры
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000430 \u000438\u000433\u000440\u00044b
    */
   render() {
-    // Очистка canvas
-    this.ctx.fillStyle = '#1a1a2e';
-    this.ctx.fillRect(0, 0, this.width, this.height);
+    // \u000413\u000435\u00043d\u000435\u000440\u000430\u000446\u000438\u00044f \u000446\u000443\u00043c\u000430\u000442 Perlin \u000434\u00043b\u00044f \u000444\u00043e\u00043d\u000430
+    this.renderCaveBackground();
     
-    // Отрисовка систем
+    // \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000430 \u000441\u000438\u000441\u000442\u000435\u00043c
     this.events.emit('game:render', this.ctx);
     
-    // Отладочная информация
+    // \u00041e\u000442\u00043e\u000431\u000440\u000430\u000436\u000435\u00043d\u000438\u000435 \u00043e\u000442\u00043b\u000430\u000434\u00043e\u000447\u00043d\u000430\u00044f \u000438\u00043d\u000444\u00043e\u000440\u00043c\u000430\u000446\u000438\u00044f
     if (this.debugMode) {
       this.renderDebugInfo();
     }
   }
 
   /**
-   * Отображение отладочной информации
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000444\u00043e\u00043d\u000430\u000432 \u00043f\u000435\u000449\u000435\u000440\u00044b
+   * \u000418\u000441\u00043f\u00043e\u00043b\u00044c\u000437\u00043e\u000432\u000430\u00043d\u000438\u000435 Perlin \u000448\u000443\u00043c \u000434\u00043b\u00044f \u000442\u000435\u00043a\u000441\u000442\u000443\u000440\u00044b
    * @private
    */
-  renderDebugInfo() {
+  renderCaveBackground() {
     const ctx = this.ctx;
-    const lineHeight = 20;
-    const startX = 10;
-    let startY = this.height - 100;
+    const tileSize = 64;
     
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(startX - 5, startY - 15, 200, 100);
-    
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '12px monospace';
-    ctx.textAlign = 'left';
-    
-    ctx.fillText(`FPS: ${this.gameLoop.getFps()}`, startX, startY);
-    ctx.fillText(`State: ${this.state}`, startX, startY + lineHeight);
-    ctx.fillText(`Frame: ${this.gameLoop.frameCount}`, startX, startY + lineHeight * 2);
-    
-    // Золотая рамка
-    ctx.strokeStyle = '#d4af37';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(startX - 5, startY - 15, 200, 100);
-  }
-
-  /**
-   * Переключение паузы
-   */
-  togglePause() {
-    if (this.state === 'playing') {
-      this.state = 'paused';
-      this.gameLoop.pause();
-      this.events.emit('game:pause');
-    } else if (this.state === 'paused') {
-      this.state = 'playing';
-      this.gameLoop.resume();
-      this.events.emit('game:resume');
+    // \u000414\u00043e\u000431\u000430\u000432\u00043b\u000435\u00043d\u000438\u000435 \u000442\u000435\u00043a\u000441\u000442\u000443\u000440\u00044b
+    for (let y = 0; y < this.height + tileSize; y += tileSize) {
+      for (let x = 0; x < this.width + tileSize; x += tileSize) {
+        const noiseX = x * 0.02;
+        const noiseY = y * 0.02;
+        const noiseValue = Math.sin(noiseX) * Math.cos(noiseY) * 0.5 + 0.5;
+        
+        // \u00041f\u000440\u000435\u000432\u000440\u000430\u000448\u000441\u000430 \u000432 \u000446\u000432\u000435\u000442
+        let color;
+        if (noiseValue < 0.3) {
+          color = '#1a1a2e';
+        } else if (noiseValue < 0.45) {
+          color = '#2d1b00';
+        } else if (noiseValue < 0.6) {
+          color = '#4a3520';
+        } else if (noiseValue < 0.75) {
+          color = '#6b4c2a';
+        } else {
+          color = '#8b6914';
+        }
+        
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, tileSize, tileSize);
+      }
     }
   }
 
   /**
-   * Завершение игры
+   * \u00041e\u000442\u00043e\u000440\u000430\u000436\u000435\u00043d\u000438\u000435 \u00043e\u000442\u00043b\u000430\u000434\u00043e\u000447\u00043d\u000430\u00044f \u000438\u00043d\u000444\u00043e\u000440\u00043c\u000430\u000446\u000438\u000438
+   * @private
    */
-  gameOver() {
-    this.state = 'gameover';
-    this.events.emit('game:over');
+  renderDebugInfo() {
+    const ctx = this.ctx;
+    
+    ctx.save();
+    ctx.resetTransform();
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(10, 10, 250, 120);
+    
+    ctx.fillStyle = '#ffd700';
+    ctx.font = '12px Arial';
+    ctx.fillText(`FPS: ${Math.round(1000 / (performance.now() - (this.lastFrameTime || 0)))}`, 20, 30);
+    ctx.fillText(`State: ${this.state}`, 20, 50);
+    ctx.fillText(`Resolution: ${this.width}x${this.height}`, 20, 70);
+    ctx.fillText(`Debug: ON`, 20, 90);
+    
+    ctx.restore();
+    
+    this.lastFrameTime = performance.now();
   }
 
   /**
-   * Перезапуск игры
+   * \u00041f\u000440\u000438\u00043e\u000441\u000442\u000430\u00043d\u00043e\u000432\u00043a\u000430 38\u000433\u000440\u00044b
    */
-  restart() {
+  pause() {
+    this.state = 'paused';
+    this.gameLoop.stop();
+    this.events.emit('game:pause');
+    console.log('Game paused');
+  }
+
+  /**
+   * \u00041f\u000440\u00043e\u000434\u00043e\u00043b\u000436\u000435\u00043d\u000438\u000435 38\u000433\u000440\u00044b
+   */
+  resume() {
     this.state = 'playing';
-    this.events.emit('game:restart');
+    this.gameLoop.start();
+    this.events.emit('game:resume');
+    console.log('Game resumed');
+  }
+
+  /**
+   * \u00041f\u000435\u000440\u000435\u00043a\u00043b\u00044e\u000447\u000435\u00043d\u000438\u000435 3f\u000430\u000443374b
+   */
+  togglePause() {
+    if (this.state === 'playing') {
+      this.pause();
+    } else if (this.state === 'paused') {
+      this.resume();
+    }
+  }
+
+  /**
+   * \u000417\u000430\u000432\u000435\u000440\u000448\u000438\u000442\u00044c \u000438\u000433\u000440\u000443
+   */
+  stop() {
+    this.state = 'stopped';
+    this.gameLoop.stop();
+    this.events.emit('game:stop');
+    console.log('Game stopped');
+  }
+
+  /**
+   * \u00041f\u00043e\u00043b\u000443\u000447\u000435\u00043d\u000438\u000435 \u000438\u00043d\u000444\u00043e\u000440\u00043c\u000430\u000446\u000438\u00044f \u00043e \u000432\u00044b\u000439\u000433\u000440\u000430\u000435
+   */
+  getGameInfo() {
+    return {
+      state: this.state,
+      width: this.width,
+      height: this.height,
+      debugMode: this.debugMode,
+      frameTime: this.lastFrameTime
+    };
   }
 }
