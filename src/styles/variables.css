@@ -1,0 +1,57 @@
+:root {
+  /* Основные цвета фона */
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #1f1f2e;
+  --bg-surface: #242435;
+  
+  /* Золото */
+  --gold-primary: #d4af37;
+  --gold-light: #ffd700;
+  --gold-dark: #8b6914;
+  --gold-glow: rgba(212, 175, 55, 0.5);
+  --gold-gradient: linear-gradient(135deg, #8b6914, #d4af37, #ffd700);
+  
+  /* Акценты */
+  --accent-dark: #2d1b00;
+  --accent-medium: #4a3520;
+  --accent-light: #6b4c2a;
+  
+  /* Текст */
+  --text-primary: #e0d5c1;
+  --text-secondary: #b8a88a;
+  --text-muted: #7a6b54;
+  --text-disabled: #4a4030;
+  
+  /* Эффекты */
+  --shadow-dark: rgba(0, 0, 0, 0.7);
+  --shadow-medium: rgba(0, 0, 0, 0.5);
+  --shadow-gold: rgba(212, 175, 55, 0.3);
+  --glow-gold: 0 0 10px rgba(212, 175, 55, 0.5);
+  
+  /* Стихийные элементы */
+  --fire: #ff6b35;
+  --fire-glow: rgba(255, 107, 53, 0.5);
+  --ice: #7ec8e3;
+  --ice-glow: rgba(126, 200, 227, 0.5);
+  --poison: #7cb342;
+  --poison-glow: rgba(124, 179, 66, 0.5);
+  --blood: #8b0000;
+  --soul: #9b59b6;
+  --soul-glow: rgba(155, 89, 182, 0.5);
+  
+  /* Редкость предметов */
+  --rarity-common: #9e9e9e;
+  --rarity-uncommon: #4caf50;
+  --rarity-rare: #2196f3;
+  --rarity-epic: #9c27b0;
+  --rarity-legendary: #ff9800;
+  
+  /* UI размеры */
+  --ui-padding: 16px;
+  --ui-border-radius: 4px;
+  --ui-font-size-sm: 12px;
+  --ui-font-size-md: 14px;
+  --ui-font-size-lg: 18px;
+  --ui-font-size-xl: 24px;
+}
