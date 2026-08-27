@@ -13,13 +13,13 @@ import { LoadingScreen } from './ui/LoadingScreen.js';
 import { RenderOptimizer } from './core/RenderOptimizer.js';
 import { ItemManager } from './systems/ItemManager.js';
 
-// 133b3e31303b4c3d4b35 3f3540353c353d3d4b35
+// \u000413\u00043b\u00043e\u000431\u000430\u00043b\u00044c\u00043d\u00044b\u000435 \u00043f\u000435\u000440\u000435\u00043c\u000435\u00043d\u00043d\u00044b\u000435
 const settingsManager = new SettingsManager();
 
-// 1d304142403e393a30 41384142353c4b 3730334043373a38
+// \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000441\u000438\u000441\u000442\u000435\u00043c\u00044b \u000437\u000430\u000433\u000440\u000443\u000437\u00043a\u000438
 const loadingScreen = new LoadingScreen();
 
-// 183d384638303b38373046384f 3833404b
+// \u000418\u00043d\u000438\u000446\u000438\u000430\u00043b\u000438\u000437\u000430\u000446\u000438\u00044f \u000438\u000433\u000440\u00044b
 const game = new Game();
 const player = new Player(game);
 const camera = new Camera(game);
@@ -33,23 +33,32 @@ const settingsUI = new SettingsUI(game, settingsManager);
 const renderOptimizer = new RenderOptimizer(game);
 const itemManager = new ItemManager(game, player);
 
-// 1d304142403e393a30 343b4f 334030323b38
+// \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000434\u00043b\u00044f \u000433\u000440\u000430\u000432\u000443\u000437\u00043a\u000438
 const levelData = mapGenerator.generate(1);
+
+// TOPDOWN: \u00041f\u00043b\u000430\u000442\u000435\u000440\u00044c \u000441\u00043f\u000430\u000432\u00043d\u000438\u000442\u000441\u00044f \u000432 \u00043a\u00043e\u00043c\u00043d\u000430\u000442\u000435
+player.x = levelData.playerStartX || 400;
+player.y = levelData.playerStartY || 300;
+
+// TOPDOWN: \u00041f\u00043e\u000440\u000438\u000434\u00043e\u000440\u000430\u000434 \u000442\u00043e\u00043b\u00044c\u00043a\u00043e \u00043a\u000430\u00043c\u000435\u000440\u000430 \u00043d\u000430 \u000441\u00043b\u000435\u000434\u000438\u000442\u000441\u00044c \u000437\u000430 \u000438\u000433\u000440\u00043e\u00043a\u000430
+camera.x = player.x - game.width / 2 + player.width / 2;
+camera.y = player.y - game.height / 2 + player.height / 2;
+
 enemyManager.spawnEnemiesForFloor(levelData.rooms, 1);
 
-// 1f3e3b30323b4f4230 3d304142403e393a303c 3837 SettingsManager
+// \u00041f\u00043e\u00043b\u000430\u000432\u00043b\u00044f\u000442\u000430 \u00043d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430\u00043c \u000438\u000437 SettingsManager
 const settings = settingsManager.getSettings();
 if (settings.debugMode) {
   game.debugMode = true;
 }
 
-// 213e4540303d4f35 41414b3b3a43 3d30 38334042
+// \u000421\u00043e\u000445\u000440\u000430\u00043d\u00044f\u000442\u00044c \u000441\u000441\u00044b\u00043b\u00043a\u000443 \u00043d\u000430 \u000438\u000433\u000440\u00043e\u00043a\u000442
 game.player = player;
 game.input = inputManager;
 game.settings = settingsManager;
 game.renderOptimizer = renderOptimizer;
 
-// 21383c433b384043304230 3730334043373a38
+// \u000421\u000438\u00043c\u000443\u00043b\u000438\u000440\u000443\u000430\u000442\u000430 \u000437\u000430\u000433\u000440\u000443\u000437\u00043a\u000438
 setTimeout(() => {
   loadingScreen.updateProgress(20);
 }, 100);
@@ -72,16 +81,16 @@ setTimeout(() => {
   game.start();
 }, 500);
 
-// 1f3e343f38413a30 3d30 413e314b4242384f
+// \u00041f\u00043e\u000434\u00043f\u000438\u000441\u00043a\u000430 \u00043d\u000430 \u000441\u00043e\u000431\u00044b\u000442\u000438\u00044f
 game.events.on('game:update', (deltaTime) => {
   inputManager.update();
   camera.follow(player);
   itemManager.update(deltaTime);
 });
 
-// 1f3e343f38413a30 3d30 40353d343540383d3343
+// \u00041f\u00043e\u000434\u00043f\u000438\u000441\u00043a\u000430 \u00043d\u000430 \u000440\u000435\u00043d\u000434\u000435\u000440\u000438\u00043d\u000433\u000443
 game.events.on('game:render', (ctx) => {
-  // 1e424038413e323030 41 3e3f42383c38373046383539
+  // \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000441 \u00043e\u00043f\u000442\u000438\u00043c\u000438\u000437\u000430\u000446\u000438\u000435\u000439
   renderOptimizer.optimizeRender(() => {
     camera.applyTransform(ctx);
     mapGenerator.render(ctx, camera);
@@ -92,13 +101,13 @@ game.events.on('game:render', (ctx) => {
     particleSystem.render(ctx);
     camera.resetTransform(ctx);
     
-    // 1e424038413e323030 UI
+    // \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c UI
     hud.render(ctx);
     settingsUI.render(ctx);
   });
 });
 
-// 2d3a413f3e4042 343b4f 3e423b30343a38
+// \u00042d\u00043a\u000441\u00043f\u00043e\u000440\u000442 \u000434\u00043b\u00044f \u00043e\u000442\u00043b\u000430\u000434\u00043a\u000438
 window.game = game;
 window.player = player;
 window.camera = camera;
@@ -113,4 +122,5 @@ window.settingsUI = settingsUI;
 window.renderOptimizer = renderOptimizer;
 window.itemManager = itemManager;
 
-console.log('Dark Descent: Echoes of the Abyss - Game initialized');
+// TOPDOWN game - this is a TOPDOWN format game where world is larger than viewport and camera follows player
+console.log('Dark Descent: Echoes of the Abyss - Game initialized - TOPDOWN format');

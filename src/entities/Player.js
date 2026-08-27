@@ -1,6 +1,7 @@
 /**
  * \u00041a\u00043b\u000430\u000441\u000441 \u000438\u000433\u000440\u00043e\u00043a\u000430
  * \u000423\u00043f\u000440\u000430\u000432\u00043b\u00044f\u000435\u000442 \u000434\u000432\u000438\u000436\u000435\u00043d\u000438\u00044f, \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u000435\u00043c \u000438 \u000440\u000435\u000441\u000443\u000440\u000441\u000430\u00043c\u000438 \u000438\u000433\u000440\u00043e\u00043a\u000430
+ * TOPDOWN game - movement is relative to world, not camera
  * @class Player
  */
 export class Player {
@@ -38,10 +39,13 @@ export class Player {
     this.souls = 0;
     this.floor = 1;
     
+    // \u00041c\u000430\u00043d\u000430 \u000440\u000435\u000433\u000435\u00043d\u000435\u000440\u000430\u000446\u000438\u00044f
+    this.manaRegenRate = 10; // \u00043c\u000430\u00043d\u000430 \u000432 \u000441\u000435\u00043a\u000443\u00043d\u000434\u000443
+    this.manaRegenTimer = 0;
+    
     // \u000421\u00043f\u000438\u000441\u00043e\u00043a \u000434\u00043b\u00044f \u00043e\u000447\u000438\u000441\u000442\u00043a\u000438 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000435\u000439
     this.unsubscribers = [];
     
-    this.setupControls();
     this.setupEvents();
   }
 
@@ -49,73 +53,10 @@ export class Player {
    * \u00041e\u000447\u000438\u000441\u000442\u00043a\u000430 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000435\u000439
    */
   cleanup() {
-    // \u000423\u000434\u000430\u00043b\u00044f\u000435\u00043c \u000432\u000441\u000435 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000438\u000442\u000435\u000440\u00043e\u000432
     for (const unsubscribe of this.unsubscribers) {
       unsubscribe();
     }
     this.unsubscribers = [];
-    
-    // \u000423\u000434\u000430\u00043b\u00044f\u000435\u00043c window event listeners
-    window.removeEventListener('keydown', this.handleKeyDown);
-    window.removeEventListener('keyup', this.handleKeyUp);
-  }
-
-  /**
-   * \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000443\u00043f\u000440\u000430\u000432\u00043b\u000435\u00043d\u000438\u00044f
-   * @private
-   */
-  setupControls() {
-    this.keys = {
-      up: false,
-      down: false,
-      left: false,
-      right: false
-    };
-    
-    this.handleKeyDown = (e) => {
-      switch(e.key.toLowerCase()) {
-        case 'w':
-        case '\u000446':
-          this.keys.up = true;
-          break;
-        case 's':
-        case '\u00044b':
-          this.keys.down = true;
-          break;
-        case 'a':
-        case '\u000444':
-          this.keys.left = true;
-          break;
-        case 'd':
-        case '\u000442':
-          this.keys.right = true;
-          break;
-      }
-    };
-    
-    this.handleKeyUp = (e) => {
-      switch(e.key.toLowerCase()) {
-        case 'w':
-        case '\u000446':
-          this.keys.up = false;
-          break;
-        case 's':
-        case '\u00044b':
-          this.keys.down = false;
-          break;
-        case 'a':
-        case '\u000444':
-          this.keys.left = false;
-          break;
-        case 'd':
-        case '\u000442':
-          this.keys.right = false;
-          break;
-      }
-    };
-    
-    window.addEventListener('keydown', this.handleKeyDown);
-    window.addEventListener('keyup', this.handleKeyUp);
   }
 
   /**
@@ -135,20 +76,30 @@ export class Player {
   update(deltaTime) {
     if (!this.isAlive) return;
     
+    // \u000412\u00043e\u000441\u000442\u000430\u00043d\u00043e\u000432\u00043b\u000435\u00043d\u000438\u000435 \u00043c\u000430\u00043d\u00044b
+    this.manaRegenTimer += deltaTime;
+    if (this.manaRegenTimer >= 1 && this.mana < this.maxMana) {
+      this.mana = Math.min(this.maxMana, this.mana + this.manaRegenRate * deltaTime);
+      this.manaRegenTimer = 0;
+      this.events.emit('player:mana', { mana: this.mana });
+    }
+    
     // \u000421\u000431\u000440\u00043e\u000441 \u000441\u00043a\u00043e\u000440\u00043e\u000441\u000442\u000438
     this.vx = 0;
     this.vy = 0;
     
-    // \u00041e\u000431\u000440\u000430\u000431\u00043e\u000442\u00043a\u000430 \u000432\u000432\u00043e\u000434\u000430
-    if (this.keys.up) this.vy = -this.speed;
-    if (this.keys.down) this.vy = this.speed;
-    if (this.keys.left) {
-      this.vx = -this.speed;
-      this.facing = 'left';
-    }
-    if (this.keys.right) {
-      this.vx = this.speed;
-      this.facing = 'right';
+    // TOPDOWN: \u000418\u000441\u00043f\u00043e\u00043b\u00044c\u000437\u00043e\u000432\u000430\u00043d\u000438\u000435 InputManager \u000434\u00043b\u00044f \u000432\u000432\u00043e\u000434\u000430
+    if (this.game.input) {
+      if (this.game.input.isKeyDown('w') || this.game.input.isKeyDown('\u000446')) this.vy = -this.speed;
+      if (this.game.input.isKeyDown('s') || this.game.input.isKeyDown('\u00044b')) this.vy = this.speed;
+      if (this.game.input.isKeyDown('a') || this.game.input.isKeyDown('\u000444')) {
+        this.vx = -this.speed;
+        this.facing = 'left';
+      }
+      if (this.game.input.isKeyDown('d') || this.game.input.isKeyDown('\u000442')) {
+        this.vx = this.speed;
+        this.facing = 'right';
+      }
     }
     
     // \u00041d\u00043e\u000440\u00043c\u000430\u00043b\u000438\u000437\u000430\u000446\u000438\u00044f \u000434\u000432\u000438\u000436\u000435\u00043d\u000438\u00044f \u000434\u000432\u000430\u000434\u00044c\u00044e

@@ -1,6 +1,7 @@
 /**
  * InputManager
- * 233f4030323b4f3542 32323e343e3c 3f3e3b4c373e323042353b4f353c
+ * \u000423\u00043f\u000440\u000430\u000432\u00043b\u00044f\u000435\u000442 \u000432\u000432\u00043e\u000434\u00043e\u00043c \u00043f\u00043e\u00043b\u00044c\u000437\u00043e\u000432\u000430\u000442\u000435\u00043b\u00044f\u000435\u00043c
+ * TOPDOWN game - all movement is relative to camera view
  * @class InputManager
  */
 export class InputManager {
@@ -8,74 +9,104 @@ export class InputManager {
     this.game = game;
     this.canvas = game.canvas;
     
-    // 1c4b484c
+    // \u00041c\u00044b\u000448\u00044c
     this.mouseX = 0;
     this.mouseY = 0;
     this.mouseDown = false;
-    this.mouseUp = false;
     this.mousePressed = false;
+    this.mouseReleased = false;
+    this.prevMouseDown = false;
     
-    // 1a3b303238483043404b
+    // \u00041a\u00043b\u000430\u000432\u000438\u000448\u000430\u000443\u000440\u00044b
     this.keys = {};
     this.keysPressed = {};
     this.keysReleased = {};
+    this.prevKeys = {};
     
     this.setupEventListeners();
   }
 
   /**
-   * 1d304142403e393a30 413b43483042353b3539
+   * \u00041e\u000447\u000438\u000441\u000442\u00043a\u000430 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000435\u000439
+   */
+  cleanup() {
+    if (this.canvas) {
+      this.canvas.removeEventListener('mousemove', this.handleMouseMove);
+      this.canvas.removeEventListener('mousedown', this.handleMouseDown);
+      this.canvas.removeEventListener('mouseup', this.handleMouseUp);
+      this.canvas.removeEventListener('mouseleave', this.handleMouseLeave);
+    }
+    window.removeEventListener('keydown', this.handleKeyDown);
+    window.removeEventListener('keyup', this.handleKeyUp);
+  }
+
+  /**
+   * \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000435\u000439
    * @private
    */
   setupEventListeners() {
-    // 1c4b484c 34323836353d384f
-    this.canvas.addEventListener('mousemove', (e) => {
+    // \u00041c\u00044b\u000448\u00044c \u000434\u000432\u000438\u000436\u000435\u00043d\u000438\u00044f
+    this.handleMouseMove = (e) => {
       const rect = this.canvas.getBoundingClientRect();
       this.mouseX = e.clientX - rect.left;
       this.mouseY = e.clientY - rect.top;
-    });
+    };
     
-    this.canvas.addEventListener('mousedown', (e) => {
+    this.handleMouseDown = (e) => {
+      const rect = this.canvas.getBoundingClientRect();
+      this.mouseX = e.clientX - rect.left;
+      this.mouseY = e.clientY - rect.top;
       this.mouseDown = true;
-      this.mousePressed = true;
-      const rect = this.canvas.getBoundingClientRect();
-      this.mouseX = e.clientX - rect.left;
-      this.mouseY = e.clientY - rect.top;
-    });
+    };
     
-    this.canvas.addEventListener('mouseup', (e) => {
+    this.handleMouseUp = (e) => {
       this.mouseDown = false;
-      this.mouseUp = true;
-    });
+      this.mouseReleased = true;
+    };
     
-    this.canvas.addEventListener('mouseleave', () => {
+    this.handleMouseLeave = () => {
       this.mouseDown = false;
-    });
+    };
     
-    // 1a3b303238483043404b
-    window.addEventListener('keydown', (e) => {
+    this.canvas.addEventListener('mousemove', this.handleMouseMove);
+    this.canvas.addEventListener('mousedown', this.handleMouseDown);
+    this.canvas.addEventListener('mouseup', this.handleMouseUp);
+    this.canvas.addEventListener('mouseleave', this.handleMouseLeave);
+    
+    // \u00041a\u00043b\u000430\u000432\u000438\u000448\u000430\u000443\u000440\u00044b
+    this.handleKeyDown = (e) => {
       this.keys[e.key] = true;
       this.keysPressed[e.key] = true;
-    });
+    };
     
-    window.addEventListener('keyup', (e) => {
+    this.handleKeyUp = (e) => {
       this.keys[e.key] = false;
       this.keysReleased[e.key] = true;
-    });
+    };
+    
+    window.addEventListener('keydown', this.handleKeyDown);
+    window.addEventListener('keyup', this.handleKeyUp);
   }
 
   /**
-   * 2131403e41 32413545 413e41423e4f3d384f 32323e3430
+   * \u000421\u000431\u000440\u00043e\u000441 \u000432\u000441\u000435\u000445 \u000441\u00043e\u000431\u000442\u00043e\u000439\u000439 \u000432\u000432\u00043e\u000434\u000430
    */
   update() {
-    this.mousePressed = false;
-    this.mouseUp = false;
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00044f\u000435\u00043c \u00043e\u000434\u00043d\u00043e\u00043a\u000440\u000430\u000442\u00043d\u00043e\u000433\u00043e \u00043d\u000430\u000436\u000430\u000442\u000438\u00044f \u00043d\u000430 \u00043c\u00044b\u000448\u000438
+    this.mousePressed = this.mouseDown && !this.prevMouseDown;
+    this.prevMouseDown = this.mouseDown;
+    
+    // \u000421\u000431\u000440\u00043e\u000441 \u00043a\u00043b\u000430\u000432\u000438\u000448
+    this.mouseReleased = false;
     this.keysPressed = {};
     this.keysReleased = {};
+    
+    // \u000421\u00043e\u000445\u000440\u000430\u00043d\u000435\u00043d\u000438\u000435 \u000441\u00043e\u000441\u000442\u00043e\u00044f\u00043d\u000438\u00044f \u00043f\u000440\u000435\u000434\u00044b\u000434\u000443\u000449\u000435\u000433\u00043e \u00043a\u00043b\u00044e\u000447\u000430
+    this.prevKeys = { ...this.keys };
   }
 
   /**
-   * 1f403e3235403a30 3d303630423040 3a3b3032384830
+   * \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u00043d\u000430\u000436\u000430\u000442\u000430\u000440 \u00043a\u00043b\u000430\u000432\u000438\u000448\u000430
    * @param {string} key
    * @returns {boolean}
    */
@@ -84,7 +115,7 @@ export class InputManager {
   }
 
   /**
-   * 1f403e3235403a30 3e423f4349353d30 3a3b3032384830
+   * \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u00043e\u000442\u00043f\u000443\u000449\u000435\u00043d\u000430 \u00043a\u00043b\u000430\u000432\u000438\u000448\u000430
    * @param {string} key
    * @returns {boolean}
    */
@@ -93,7 +124,7 @@ export class InputManager {
   }
 
   /**
-   * 1f403e3235403a30 373036304230 3a3b3032384830
+   * \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000437\u000430\u000436\u000430\u000442\u000430 \u00043a\u00043b\u000430\u000432\u000438\u000448\u000430
    * @param {string} key
    * @returns {boolean}
    */
@@ -102,7 +133,7 @@ export class InputManager {
   }
 
   /**
-   * 1f403e3235403a30 413b303630423040 3c4b4838
+   * \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000436\u000430\u000442\u000430\u000440 \u00043c\u00044b\u000448\u000438
    * @returns {boolean}
    */
   isMousePressed() {
@@ -110,15 +141,15 @@ export class InputManager {
   }
 
   /**
-   * 1f403e3235403a30 3e423f4349353d30 3c4b4838
+   * \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u00043e\u000442\u00043f\u000443\u000449\u000435\u00043d\u000430 \u00043c\u00044b\u000448\u000438
    * @returns {boolean}
    */
   isMouseReleased() {
-    return this.mouseUp;
+    return this.mouseReleased;
   }
 
   /**
-   * 1f403e3235403a30 373036304230 3c4b4838 373040304230
+   * \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000437\u000430\u000436\u000430\u000442\u000430 \u00043c\u00044b\u000448\u000438 \u000437\u000430\u000440\u000430\u000442\u000430
    * @returns {boolean}
    */
   isMouseDown() {
@@ -126,7 +157,7 @@ export class InputManager {
   }
 
   /**
-   * 1f3e3b474730424c 3a3e3e4034383d30424b 3c4b4838
+   * \u00041f\u00043e\u00043b\u000447\u000447\u000430\u000442\u00044c \u00043a\u00043e\u00043e\u000440\u000434\u000438\u00043d\u000430\u000442\u00044b \u00043c\u00044b\u000448\u000438
    * @returns {{x: number, y: number}}
    */
   getMousePosition() {

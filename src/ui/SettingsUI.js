@@ -1,6 +1,7 @@
 /**
  * SettingsUI
- * 1a3e3c3f3e3d353d42 3d304142403e353a 41 324b3f3034304e49383c 413f38413a3e3c
+ * \u00041a\u00043e\u00043c\u00043f\u00043e\u00043d\u000435\u00043d\u000442 \u00043d\u000430\u000441\u000442\u000440\u00043e\u000435\u00043a \u000441 \u000432\u00044b\u00043f\u000430\u000434\u000430\u00044e\u000449\u000438\u00043c \u000441\u00043f\u000438\u000441\u00043a\u00043e\u00043c
+ * TOPDOWN game
  * @class SettingsUI
  */
 export class SettingsUI {
@@ -9,7 +10,7 @@ export class SettingsUI {
     this.settings = settingsManager;
     this.events = game.events;
     
-    // 213e41423e4f3d3835
+    // \u000421\u00043e\u000441\u000442\u00043e\u00044f\u00043d\u000438\u000435
     this.isOpen = false;
     this.buttonX = 20;
     this.buttonY = 20;
@@ -19,26 +20,44 @@ export class SettingsUI {
     this.panelX = this.buttonX + this.buttonWidth + 10;
     this.panelY = this.buttonY;
     
-    // 1a3d3e3f3a30 413b303934354030
+    // \u00041a\u00043d\u00043e\u00043f\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430
     this.sliderWidth = 150;
     this.sliderHeight = 20;
+    
+    // \u00041f\u000440\u000435\u000434\u00044b\u000434\u000443\u000449\u000430\u00044f \u00043d\u000430\u000436\u000430\u000442\u000438\u00044f \u00043d\u000430 \u00043a\u00043d\u00043e\u00043f\u00043a\u000443
+    this.prevMouseDown = false;
+    this.wasMouseDownOnButton = false;
+    this.wasMouseDownOnPanel = false;
     
     this.setupEvents();
   }
 
   /**
-   * 1d304142403e393a30 413e314b423839
-   * @private
+   * \u00041e\u000447\u000438\u000441\u000442\u00043a\u000430 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000435\u000439
    */
-  setupEvents() {
-    this.events.on('game:render', (ctx) => this.render(ctx));
-    this.events.on('game:update', (deltaTime) => this.update(deltaTime));
+  cleanup() {
+    // \u000423\u000434\u000430\u00043b\u00044f\u000435\u00043c \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000438 \u000438\u000437 \u000435\u000432\u000435\u00043d\u000442\u000430\u00043c
+    for (const unsubscribe of this.unsubscribers || []) {
+      unsubscribe();
+    }
+    this.unsubscribers = [];
   }
 
   /**
-   * 1f403e3235403a30 3a3b383a30 3d30 3d303630423835
-   * @param {number} x - 1a3e3e4034383d304230 X
-   * @param {number} y - 1a3e3e4034383d304230 Y
+   * \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000441\u00043o\u000431\u00044b\u000442\u000438\u000439
+   * @private
+   */
+  setupEvents() {
+    this.unsubscribers = [];
+    const unsubscribeRender = this.events.on('game:render', (ctx) => this.render(ctx));
+    const unsubscribeUpdate = this.events.on('game:update', (deltaTime) => this.update(deltaTime));
+    this.unsubscribers.push(unsubscribeRender, unsubscribeUpdate);
+  }
+
+  /**
+   * \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u00043a\u00043e\u00043e\u000440\u000434\u000438\u00043d\u000430\u000442\u000430 \u000432 \u000440\u000443\u000433\u000442\u000435\u000447\u000442\u00043e\u000447\u00043a\u000435
+   * @param {number} x - \u00041a\u00043e\u00043e\u000440\u000434\u000438\u00043d\u000430\u000442\u000430 X
+   * @param {number} y - \u00041a\u00043e\u00043e\u000440\u000434\u000438\u00043d\u000430\u000442\u000430 Y
    * @returns {boolean}
    * @private
    */
@@ -47,32 +66,47 @@ export class SettingsUI {
   }
 
   /**
-   * 1e313d3e323b353d3835 413e314b423839
+   * \u00041e\u000431\u00043d\u00043e\u000432\u00043b\u000435\u00043d\u000438\u000435 \u000441\u00043e\u000441\u000442\u00043e\u00044f\u00043d\u000438\u000439
    * @param {number} deltaTime
    * @private
    */
   update(deltaTime) {
-    // 1f403e3235403a30 3d303630423835 3d30 3a3d3e3f3a35
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u00043d\u000430\u000436\u000430\u000442\u000438\u000435 \u00043d\u000430 \u000438\u000433\u000440\u000435
     if (this.game.state !== 'playing') return;
     
-    // 1f403e3235403a30 3a3b383a30 3c4b4838
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u00043c\u00044b\u000448\u000438 \u000432 \u00043e\u000434\u00043d\u00043e\u00043c \u00043c\u00043e\u000432\u000435\u00043d\u000442\u000430
     if (this.game.input) {
-      const { mouseX, mouseY, mouseDown, mouseUp } = this.game.input;
+      const { mouseX, mouseY, isMousePressed, isMouseReleased } = this.game.input;
+      const mouseDown = this.game.input.isMouseDown();
       
-      // 1f403e3235403a30 3d303630423835 3d30 3a3d3e3f3a43 41354242383d333e32
-      if (mouseDown && this.isPointInRect(mouseX, mouseY, this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight)) {
+      // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u00043d\u000430\u000436\u000430\u000442\u000438\u00044f \u00043d\u000430 \u00043a\u00043d\u00043e\u00043f\u00043a\u000443 \u000441\u000435\u000442\u000442\u000438\u00043d\u000433\u00043e\u000432
+      const gearButtonClicked = this.isPointInRect(mouseX, mouseY, this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight);
+      
+      // \u00041e\u000431\u000440\u000430\u000431\u00043e\u000442\u000430 \u00043d\u000430 \u000436\u000430\u000442\u000438\u000441\u00043a\u000443 \u00043d\u000430 \u00043a\u00043d\u00043e\u00043f\u00043a\u000443
+      if (isMousePressed() && gearButtonClicked) {
         this.isOpen = !this.isOpen;
+        this.wasMouseDownOnButton = true;
       }
       
-      // 1e314030313e423a30 3d304142403e393a38 32 3e423a404b423e3c 3f303d353b38
-      if (this.isOpen && mouseDown) {
-        this.handlePanelClick(mouseX, mouseY);
+      // \u00041e\u000431\u000440\u000430\u000431\u00043e\u000442\u000430 \u00043d\u000430\u000441\u000442\u000440\u00043e\u000435\u00043a \u000432 \u00043e\u000442\u00043a\u000440\u00044b\u000442\u00043e\u00043c \u00043f\u000430\u00043d\u000435\u00043b\u000438
+      if (this.isOpen && isMousePressed() && !this.wasMouseDownOnButton) {
+        const panelClicked = this.isPointInRect(mouseX, mouseY, this.panelX, this.panelY, this.panelWidth, 220);
+        if (panelClicked) {
+          this.handlePanelClick(mouseX, mouseY);
+        } else {
+          // \u000417\u000430\u00043a\u000440\u00044b\u000442\u00044c \u00043f\u000430\u00043b\u00044c \u00043f\u000440\u000438 \u00043a\u00043b\u000438\u00043a\u000435 \u000432\u00043d\u000435 \u00043f\u000430\u00043d\u000435\u00043b\u000438
+          this.isOpen = false;
+        }
       }
+      
+      // \u000421\u000431\u000440\u00043e\u000441 \u000444\u00043b\u000430\u000436\u000430\u00043a \u000432 \u00043a\u00043e\u00043d\u000446\u000435 \u00043a\u00043d\u00043e\u00043f\u00043a\u000438
+      this.prevMouseDown = mouseDown;
+      this.wasMouseDownOnButton = false;
     }
   }
 
   /**
-   * 1e314030313e423a30 3a3b383a30 32 3f303d353b38 3d304142403e353a
+   * \u00041e\u000431\u000440\u000430\u000431\u00043e\u000442\u000430 \u00043a\u00043b\u000438\u00043a\u000430 \u000432 \u00043f\u000430\u00043d\u000435\u00043b\u000438 \u00043d\u000430\u000441\u000442\u000440\u00043e\u000435\u00043a
    * @param {number} mouseX
    * @param {number} mouseY
    * @private
@@ -83,116 +117,123 @@ export class SettingsUI {
     const lineHeight = 30;
     let y = this.panelY + padding;
     
-    // 1f403e3235403a30 323a3b/324b3a3b 3732433a30
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000432\u00043a\u00043b/\u000432\u00044b\u00043a\u00043b \u000437\u000432\u000443\u00043a\u000430
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding, y, 100, 20)) {
       this.settings.setSoundEnabled(!settings.soundEnabled);
+      this.settings.saveSettings();
       return;
     }
     y += lineHeight;
     
-    // 1f403e3235403a30 413b303934354030 3732433a30 (-)
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000437\u000432\u000443\u00043a\u000430 (-)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding, y, 30, 20)) {
       this.settings.decreaseSoundVolume();
+      this.settings.saveSettings();
       return;
     }
-    // 1f403e3235403a30 413b303934354030 3732433a30 (+)
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000437\u000432\u000443\u00043a\u000430 (+)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding + this.sliderWidth + 40, y, 30, 20)) {
       this.settings.increaseSoundVolume();
+      this.settings.saveSettings();
       return;
     }
     y += lineHeight;
     
-    // 1f403e3235403a30 413b303934354030 4030373c354030 UI (-)
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000440\u000430\u000437\u00043c\u000435\u000440\u000430 UI (-)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding, y, 30, 20)) {
       this.settings.decreaseUiScale();
+      this.settings.saveSettings();
       return;
     }
-    // 1f403e3235403a30 413b303934354030 4030373c354030 UI (+)
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000440\u000430\u000437\u00043c\u000435\u000440\u000430 UI (+)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding + this.sliderWidth + 40, y, 30, 20)) {
       this.settings.increaseUiScale();
+      this.settings.saveSettings();
       return;
     }
     y += lineHeight;
     
-    // 1f403e3235403a30 413b303934354030 4030373c3540 484038444230 (-)
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000440\u000430\u000437\u00043c\u000435\u000440 \u000448\u000440\u000438\u000444\u000442\u000430 (-)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding, y, 30, 20)) {
       this.settings.decreaseFontScale();
+      this.settings.saveSettings();
       return;
     }
-    // 1f403e3235403a30 413b303934354030 4030373c3540 484038444230 (+)
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000440\u000430\u000437\u00043c\u000435\u000440 \u000448\u000440\u000438\u000444\u000442\u000430 (+)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding + this.sliderWidth + 40, y, 30, 20)) {
       this.settings.increaseFontScale();
+      this.settings.saveSettings();
       return;
     }
     y += lineHeight;
     
-    // 1f403e3235403a30 debug mode
+    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 debug mode
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding, y, 100, 20)) {
-      this.settings.setDebugMode(!settings.debugMode);
-      this.game.debugMode = !settings.debugMode;
+      const newDebugMode = !settings.debugMode;
+      this.settings.setDebugMode(newDebugMode);
+      this.game.debugMode = newDebugMode;
+      this.settings.saveSettings();
       return;
     }
   }
 
   /**
-   * 1e424038413e323a30 UI
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c UI
    * @param {CanvasRenderingContext2D} ctx
    */
   render(ctx) {
     const settings = this.settings.getSettings();
     
-    // 1a3d3e3f3a30 41354242383d333e32
+    // \u00041a\u00043d\u00043e\u00043f\u00043a\u000430 \u000441\u000435\u000442\u000442\u000438\u00043d\u000433\u00043e\u000432
     this.renderGearButton(ctx);
     
-    // 1f303d353b4c 3d304142403e353a
+    // \u00041f\u000430\u00043d\u000435\u00043b\u00044c \u00043d\u000430\u000441\u000442\u000440\u00043e\u000435\u00043a
     if (this.isOpen) {
       this.renderSettingsPanel(ctx, settings);
     }
   }
 
   /**
-   * 1e424038413e3230424c 3a3d3e3f3a38 4835414235403d38
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043a\u00043d\u00043e\u00043f\u00043a\u000438 \u000448\u000435\u000441\u000442\u000435\u000440\u00043d\u000438
    * @param {CanvasRenderingContext2D} ctx
    * @private
    */
   renderGearButton(ctx) {
     ctx.save();
     
-    // 243e3d 3a3d3e3f3a38
+    // \u000424\u00043e\u00043d \u00043a\u00043d\u00043e\u00043f\u00043a\u000438
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.fillRect(this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight);
     
-    // 173e3b3e42304f 3e3a404336303b3a30
-    ctx.strokeStyle = '#d4af37';
+    // \u000417\u00043e\u00043b\u00043e\u000442\u000430\u00044f \u00043e\u00043a\u000440\u000443\u000436\u000430\u00043b\u00043a\u000430
+    ctx.strokeStyle = this.isOpen ? '#ffd700' : '#d4af37';
     ctx.lineWidth = 2;
     ctx.strokeRect(this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight);
     
-    // 183a3e3d3a30 4835414235403d38
+    // \u000418\u00043a\u00043e\u00043d\u00043a\u000430 \u000448\u000435\u000441\u000442\u000435\u000440\u00043d\u000438
     const centerX = this.buttonX + this.buttonWidth / 2;
     const centerY = this.buttonY + this.buttonHeight / 2;
     const radius = 8;
     
-    // 1e413d3e323d304f 3a4043
+    // \u00041e\u000441\u00043d\u00043e\u000432\u00043d\u000430\u00044f \u00043a\u000440\u000443
     ctx.fillStyle = '#d4af37';
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
     ctx.fill();
     
-    // 1743314730 32 46353d424035
+    // \u000417\u000443\u000431\u000447\u000430 \u000432 \u000446\u000435\u00043d\u000442\u000440\u000435
     ctx.fillStyle = '#1a1a2e';
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius / 2, 0, Math.PI * 2);
     ctx.fill();
     
-    // 1743314b 4835414235403d38
+    // \u000417\u000443\u000431\u00044b \u000448\u000435\u000441\u000442\u000435\u000440\u00043d\u000438
     const toothSize = 3;
     const angleStep = Math.PI / 4;
     for (let i = 0; i < 8; i++) {
       const angle = i * angleStep;
       const x1 = centerX + Math.cos(angle) * (radius / 2);
       const y1 = centerY + Math.sin(angle) * (radius / 2);
-      const x2 = centerX + Math.cos(angle) * radius;
-      const y2 = centerY + Math.sin(angle) * radius;
       
       ctx.fillStyle = '#d4af37';
       ctx.fillRect(x1 - toothSize / 2, y1 - toothSize / 2, toothSize, toothSize);
@@ -202,7 +243,7 @@ export class SettingsUI {
   }
 
   /**
-   * 1e424038413e3230424c 3f303d353b38 3d304142403e353a
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043f\u000430\u00043d\u000435\u00043b\u000438 \u00043d\u000430\u000441\u000442\u000440\u00043e\u000435\u00043a
    * @param {CanvasRenderingContext2D} ctx
    * @param {Object} settings
    * @private
@@ -214,7 +255,7 @@ export class SettingsUI {
     const lineHeight = 30;
     let y = this.panelY + padding;
     
-    // 243e3d 3f303d353b38
+    // \u000424\u00043e\u00043d \u00043f\u000430\u00043d\u000435\u00043b\u000438
     ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
     ctx.fillRect(this.panelX, this.panelY, this.panelWidth, 220);
     
@@ -222,7 +263,7 @@ export class SettingsUI {
     ctx.lineWidth = 1;
     ctx.strokeRect(this.panelX, this.panelY, this.panelWidth, 220);
     
-    // 1730333e3b3e323e3a
+    // \u000417\u000430\u000433\u00043e\u00043b\u00043e\u000432\u00043e\u00043a
     ctx.fillStyle = '#d4af37';
     ctx.font = 'bold 14px Georgia';
     ctx.textAlign = 'left';
@@ -231,7 +272,7 @@ export class SettingsUI {
     ctx.font = '12px Georgia';
     ctx.fillStyle = '#e0d5c1';
     
-    // 1732433a
+    // \u000417\u000423\u000443\u00043a
     y += 5;
     
     // Sound Enable
@@ -257,7 +298,7 @@ export class SettingsUI {
   }
 
   /**
-   * 1e424038413e3230424c 42433c313b3540
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000442\u000443\u00043c\u000431\u00043b\u000435\u000440
    * @param {CanvasRenderingContext2D} ctx
    * @param {number} x
    * @param {number} y
@@ -268,13 +309,13 @@ export class SettingsUI {
    * @private
    */
   renderToggle(ctx, x, y, width, height, label, enabled) {
-    // 1b3031353b
+    // \u00041b\u000430\u000431\u000435\u00043b
     ctx.fillStyle = '#e0d5c1';
     ctx.font = '12px Georgia';
     ctx.textAlign = 'left';
     ctx.fillText(label, x, y + height / 2 + 4);
     
-    // 1f404f3c3e433e3b3d4b39 4243333c3b3540
+    // \u00041f\u000440\u00044f\u00043c\u00043e\u00043f\u00043e\u00043b\u00043d\u00044b\u000439 \u000442\u000443\u000433\u00043c\u00043b\u000435\u000440
     const toggleX = x + width + 20;
     ctx.fillStyle = enabled ? '#4caf50' : '#555';
     ctx.fillRect(toggleX, y, 40, height);
@@ -290,7 +331,7 @@ export class SettingsUI {
   }
 
   /**
-   * 1e424038413e3230424c 413b3039343540
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000441\u00043b\u000430\u000439\u000434\u000435\u000440
    * @param {CanvasRenderingContext2D} ctx
    * @param {number} x
    * @param {number} y
@@ -299,7 +340,7 @@ export class SettingsUI {
    * @private
    */
   renderSliderRow(ctx, x, y, value, label) {
-    // 1b3031353b
+    // \u00041b\u000430\u000431\u000435\u00043b
     ctx.fillStyle = '#e0d5c1';
     ctx.font = '12px Georgia';
     ctx.textAlign = 'left';
@@ -313,7 +354,7 @@ export class SettingsUI {
     ctx.textAlign = 'center';
     ctx.fillText('-', x + 80 + 15, y + 15);
     
-    // 413b3039343540
+    // \u000441\u00043b\u000430\u000439\u000434\u000435\u000440
     const sliderX = x + 120;
     this.renderSlider(ctx, sliderX, y, this.sliderWidth, 20, value);
     
@@ -336,7 +377,7 @@ export class SettingsUI {
   }
 
   /**
-   * 1e424038413e3230424c 413b3039343540
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000441\u00043b\u000430\u000439\u000434\u000435\u000440
    * @param {CanvasRenderingContext2D} ctx
    * @param {number} x
    * @param {number} y

@@ -1,6 +1,7 @@
 /**
- * HUD (Heads-Up Display)
- * 1e423e31403036303542 37343e403e324c, 3c303d43, 4035414340414b 38 383d443e403c3046384f 3e31 4d42303635
+ * \u000413\u00043e\u00043b\u00043e\u000432\u000430\u00044f \u000438\u000433\u000440\u00043e\u00043a\u000430
+ * \u00041e\u000442\u00043e\u000431\u000440\u000430\u000436\u000435\u00043d\u000438\u000435 \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u000435, \u00043c\u000430\u00043d\u00044b \u000438 \u000434\u000440\u000443\u000433\u000438\u000435
+ * TOPDOWN game - HUD is screen-space, not affected by camera
  * @class HUD
  */
 export class HUD {
@@ -9,221 +10,294 @@ export class HUD {
     this.player = player;
     this.events = game.events;
     
+    // \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u00043a\u00043e\u00043c\u00043f\u00043e\u00043d\u000435\u00043d\u000442\u00043e\u000432
+    this.healthBarWidth = 200;
+    this.healthBarHeight = 20;
+    this.manaBarWidth = 150;
+    this.manaBarHeight = 15;
+    
+    // \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u00043c\u000435\u000441\u000442\u00043e\u00043f\u00043e\u00043b\u00043e\u000436\u000435\u00043d\u000438\u00044f
     this.setupEvents();
   }
 
   /**
-   * 1d304142403e393a30 413e314b423839
+   * \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000441\u00043e\u000431\u00044b\u000442\u000438\u000439
    * @private
    */
   setupEvents() {
-    this.events.on('game:render', (ctx) => this.render(ctx));
+    this.unsubscribers = [];
+    const unsubscribeRender = this.events.on('game:render', (ctx) => this.render(ctx));
+    this.unsubscribers.push(unsubscribeRender);
   }
 
   /**
-   * 1e424038413e323a30 HUD
-   * @param {CanvasRenderingContext2D} ctx - 1a3e3d42353a4142 canvas
+   * \u00041e\u000447\u000438\u000441\u000442\u00043a\u000430 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000435\u000439
+   */
+  cleanup() {
+    for (const unsubscribe of this.unsubscribers) {
+      unsubscribe();
+    }
+    this.unsubscribers = [];
+  }
+
+  /**
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c HUD
+   * TOPDOWN: HUD is always rendered in screen space
+   * @param {CanvasRenderingContext2D} ctx
    */
   render(ctx) {
-    // 1f4030324b39 323540453d3839 43333e3b - 3130404b 37343e403e324c4f 38 3c303d30
+    ctx.save();
+    
+    // \u000421\u000431\u000440\u00043e\u000441 \u000442\u000440\u000430\u00043d\u000441\u000444\u00043e\u000440\u00043c\u000430\u000446\u000438\u000439
+    ctx.resetTransform();
+    
+    // \u00041f\u00043e\u00043b\u00043e\u000441\u000430 \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u00044f \u000441\u000432\u000435\u000440\u000445\u000443
     this.renderHealthBar(ctx);
     this.renderManaBar(ctx);
     
-    // 1f4030324b39 323540453d3839 43333e3b - 4147514247383a38 373e3b3e4230 38 344348
-    this.renderCurrency(ctx);
+    // \u00041c\u000435\u000441\u000442\u00043e \u000432 \u00043f\u000440\u000430\u000432\u00043e\u000439 \u000432\u000435\u000440\u000445\u00043d\u000435\u00043c \u000443\u000433\u00043b\u000443
+    const margin = 20;
+    const rightAlignX = this.game.width - margin;
     
-    // 1d3e3c3540 4d42303630
-    this.renderFloorInfo(ctx);
+    // TOPDOWN: Currency display in top-right corner with text format
+    // Format: X : GOLD
+    this.renderCurrency(ctx, rightAlignX, margin, this.player.gold, 'GOLD');
+    
+    // Format: X : SOUL
+    this.renderCurrency(ctx, rightAlignX, margin + 30, this.player.souls, 'SOUL');
+    
+    // \u000423\u000440\u00043e\u000432\u000435\u00043d\u00044c \u000438 \u00043e\u00043f\u00044b\u000442
+    this.renderExperience(ctx);
+    
+    // \u00041d\u00043e\u00043c\u000435\u000440 \u000443\u000440\u00043e\u000432\u00043d\u00044f
+    this.renderLevel(ctx);
+    
+    // \u00041e\u000442\u00043e\u000431\u000440\u000430\u000436\u000435\u00043d\u000438\u000435 \u000441\u000442\u000430\u000442\u000443\u000441\u000430
+    this.renderStatusEffects(ctx);
+    
+    // \u000414\u000435\u000431\u000430\u000433 \u000440\u000435\u000436\u000438\u00043c\u000430
+    if (this.game.debugMode) {
+      this.renderDebugInfo(ctx);
+    }
+    
+    ctx.restore();
   }
 
   /**
-   * 1e424038413e323a30 3f3e3b3e4130 37343e403e324c4f
-   * @param {CanvasRenderingContext2D} ctx - 1a3e3d42353a4142 canvas
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043f\u000430\u00043d\u000435\u00043b\u00044c \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u00044f
+   * @param {CanvasRenderingContext2D} ctx
    * @private
    */
   renderHealthBar(ctx) {
-    const padding = 20;
-    const width = 180;
-    const height = 25;
-    const x = this.game.width - width - padding;
-    const y = padding;
+    const x = 20;
+    const y = 20;
     
-    // 243e3d
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(x, y, width, height);
+    // \u000424\u00043e\u00043d
+    ctx.fillStyle = '#333';
+    ctx.fillRect(x, y, this.healthBarWidth + 4, this.healthBarHeight + 4);
     
-    // 1f3e3b3e4130 37343e403e324c4f
+    // \u00041e\u000441\u00043d\u00043e\u000432\u00043d\u000430\u00044f \u00043f\u000430\u00043d\u000435\u00043b\u000438
     const healthPercent = this.player.health / this.player.maxHealth;
-    const healthWidth = width * healthPercent;
+    const fillWidth = this.healthBarWidth * healthPercent;
     
-    // 1340303438353d42 37343e403e324c4f
-    const gradient = ctx.createLinearGradient(x, y, x + healthWidth, y);
-    gradient.addColorStop(0, '#8b0000');
-    gradient.addColorStop(0.5, '#cc0000');
-    gradient.addColorStop(1, '#ff4444');
+    ctx.fillStyle = healthPercent > 0.5 ? '#4caf50' : healthPercent > 0.25 ? '#ff9800' : '#f44336';
+    ctx.fillRect(x + 2, y + 2, fillWidth, this.healthBarHeight);
     
-    ctx.fillStyle = gradient;
-    ctx.fillRect(x + 2, y + 2, healthWidth - 4, height - 4);
-    
-    // 173e3b3e42304f 40303c3a30
+    // \u00041e\u000431\u000440\u000430\u00043c\u00043a\u000430
     ctx.strokeStyle = '#d4af37';
     ctx.lineWidth = 2;
-    ctx.strokeRect(x, y, width, height);
+    ctx.strokeRect(x, y, this.healthBarWidth + 4, this.healthBarHeight + 4);
     
-    // 22353a4142
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 14px Georgia';
-    ctx.textAlign = 'right';
-    ctx.fillText(
-      `${Math.ceil(this.player.health)} / ${this.player.maxHealth}`,
-      x + width - 5,
-      y + height / 2 + 5
-    );
-    
-    // 1b30313b
-    ctx.fillStyle = '#e0d5c1';
+    // \u000422\u000435\u00043a\u000441\u000442
+    ctx.fillStyle = '#fff';
     ctx.font = 'bold 12px Georgia';
-    ctx.textAlign = 'left';
-    ctx.fillText('HP:', x + 5, y + height / 2 + 5);
-    
+    ctx.textAlign = 'center';
+    ctx.fillText(`HP: ${Math.floor(this.player.health)}/${this.player.maxHealth}`, x + this.healthBarWidth / 2 + 2, y + this.healthBarHeight / 2 + 6);
     ctx.textAlign = 'left';
   }
 
   /**
-   * 1e424038413e323a30 3f3e3b3e4130 3c303d4b
-   * @param {CanvasRenderingContext2D} ctx - 1a3e3d42353a4142 canvas
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043f\u000430\u00043d\u000435\u00043b\u00044c \u00043c\u000430\u00043d\u00044b
+   * @param {CanvasRenderingContext2D} ctx
    * @private
    */
   renderManaBar(ctx) {
-    const padding = 20;
-    const width = 180;
-    const height = 20;
-    const x = this.game.width - width - padding;
-    const y = padding + 30;
+    const x = 20;
+    const y = 50;
     
-    // 243e3d
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(x, y, width, height);
+    // \u000424\u00043e\u00043d
+    ctx.fillStyle = '#333';
+    ctx.fillRect(x, y, this.manaBarWidth + 4, this.manaBarHeight + 4);
     
-    // 1f3e3b3e4130 3c303d4b
+    // \u00041e\u000441\u00043d\u00043e\u000432\u00043d\u000430\u00044f \u00043c\u000430\u00043d\u00044b
     const manaPercent = this.player.mana / this.player.maxMana;
-    const manaWidth = width * manaPercent;
+    const fillWidth = this.manaBarWidth * manaPercent;
     
-    // 1340303438353d42 3c303d4b
-    const gradient = ctx.createLinearGradient(x, y, x + manaWidth, y);
-    gradient.addColorStop(0, '#00008b');
-    gradient.addColorStop(0.5, '#4444ff');
-    gradient.addColorStop(1, '#8888ff');
+    ctx.fillStyle = '#2196f3';
+    ctx.fillRect(x + 2, y + 2, fillWidth, this.manaBarHeight);
     
-    ctx.fillStyle = gradient;
-    ctx.fillRect(x + 2, y + 2, manaWidth - 4, height - 4);
-    
-    // 173e3b3e42304f 40303c3a30
-    ctx.strokeStyle = '#8b6914';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x, y, width, height);
-    
-    // 22353a4142
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '12px Georgia';
-    ctx.textAlign = 'right';
-    ctx.fillText(
-      `${Math.ceil(this.player.mana)} / ${this.player.maxMana}`,
-      x + width - 5,
-      y + height / 2 + 4
-    );
-    
-    // 1b30313b
-    ctx.fillStyle = '#e0d5c1';
-    ctx.font = 'bold 12px Georgia';
-    ctx.textAlign = 'left';
-    ctx.fillText('MP:', x + 5, y + height / 2 + 4);
-    
-    ctx.textAlign = 'left';
-  }
-
-  /**
-   * 1e424038413e323a30 32303b4e424b
-   * @param {CanvasRenderingContext2D} ctx - 1a3e3d42353a4142 canvas
-   * @private
-   */
-  renderCurrency(ctx) {
-    const padding = 20;
-    const x = this.game.width - 220;
-    const y = 65;
-    
-    // 173e3b3e423e
-    ctx.fillStyle = '#d4af37';
-    ctx.beginPath();
-    ctx.arc(x + 10, y + 10, 8, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // 21323547353d3835 373e3b3e4230
-    ctx.shadowColor = '#ffd700';
-    ctx.shadowBlur = 5;
-    ctx.beginPath();
-    ctx.arc(x + 10, y + 10, 8, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 14px Georgia';
-    ctx.textAlign = 'right';
-    ctx.fillText(`: ${this.player.gold}`, x + 25, y + 14);
-    
-    // 14434838
-    const soulY = y + 20;
-    ctx.fillStyle = '#9b59b6';
-    ctx.beginPath();
-    ctx.arc(x + 10, soulY + 10, 8, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // 21323547353d3835 344348
-    ctx.shadowColor = '#9b59b6';
-    ctx.shadowBlur = 5;
-    ctx.beginPath();
-    ctx.arc(x + 10, soulY + 10, 8, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(`: ${this.player.souls}`, x + 25, soulY + 14);
-    
-    ctx.textAlign = 'left';
-    
-    // 1b30313b4b
-    ctx.fillStyle = '#e0d5c1';
-    ctx.font = 'bold 12px Georgia';
-    ctx.fillText('Gold:', x - 45, y + 14);
-    ctx.fillText('Souls:', x - 45, soulY + 14);
-  }
-
-  /**
-   * 1e424038413e323a30 383d443e403c30463838 3e31 4d42303635
-   * @param {CanvasRenderingContext2D} ctx - 1a3e3d42353a4142 canvas
-   * @private
-   */
-  renderFloorInfo(ctx) {
-    const text = `Floor ${this.player.floor}`;
-    const boxWidth = 100;
-    const boxHeight = 25;
-    const boxX = this.game.width / 2 - boxWidth / 2;
-    const boxY = 10;
-    
-    // 243e3d
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
-    
-    // 22353a4142
-    ctx.fillStyle = '#e0d5c1';
-    ctx.font = 'bold 14px Georgia';
-    ctx.textAlign = 'center';
-    ctx.fillText(text, this.game.width / 2, boxY + 17);
-    
-    // 173e3b3e42304f 40303c3a30
+    // \u00041e\u000431\u000440\u000430\u00043c\u00043a\u000430
     ctx.strokeStyle = '#d4af37';
     ctx.lineWidth = 1;
-    ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+    ctx.strokeRect(x, y, this.manaBarWidth + 4, this.manaBarHeight + 4);
+    
+    // \u000422\u000435\u00043a\u000441\u000442
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 10px Georgia';
+    ctx.textAlign = 'center';
+    ctx.fillText(`MP: ${Math.floor(this.player.mana)}/${this.player.maxMana}`, x + this.manaBarWidth / 2 + 2, y + this.manaBarHeight / 2 + 5);
+    ctx.textAlign = 'left';
+  }
+
+  /**
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000441\u000447\u000435\u000442
+   * TOPDOWN: Currency display format: X : GOLD / X : SOUL
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {number} x - \u00041f\u00043e\u000437\u000438\u000446\u000438\u00044f X
+   * @param {number} y - \u00041f\u00043e\u000437\u000438\u000446\u000438\u00044f Y
+   * @param {number} amount - \u00041a\u00043e\u00043b\u000438\u000447\u000435\u000441\u000442\u000432\u00043e
+   * @param {string} label - \u00041d\u000430\u000434\u00043f\u000438\u000441\u00044c (GOLD or SOUL)
+   * @private
+   */
+  renderCurrency(ctx, x, y, amount, label) {
+    ctx.save();
+    
+    // \u000424\u00043e\u00043d
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(x - 120, y - 5, 120, 25);
+    
+    // \u000413\u000440\u000430\u00043d\u000438\u000446\u000430
+    ctx.strokeStyle = '#d4af37';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x - 120, y - 5, 120, 25);
+    
+    // \u000422\u000435\u00043a\u000441\u000442 \u000444\u00043e\u000440\u00043c\u000430\u000442\u000430: "X : GOLD" \u000438\u00043b\u000438 "X : SOUL"
+    ctx.fillStyle = label === 'GOLD' ? '#ffd700' : '#8a2be2';
+    ctx.font = 'bold 14px Georgia';
+    ctx.textAlign = 'right';
+    
+    const displayText = `${amount} : ${label}`;
+    ctx.fillText(displayText, x - 10, y + 15);
+    
+    ctx.textAlign = 'left';
+    ctx.restore();
+  }
+
+  /**
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043e\u00043f\u00044b\u000442
+   * @param {CanvasRenderingContext2D} ctx
+   * @private
+   */
+  renderExperience(ctx) {
+    const x = this.game.width - 220;
+    const y = this.game.height - 40;
+    
+    // \u000424\u00043e\u00043d
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(x, y, 200, 20);
+    
+    // \u00041e\u000431\u000440\u000430\u00043c\u00043a\u000430
+    ctx.strokeStyle = '#d4af37';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, 200, 20);
+    
+    // \u000417\u000430\u00043f\u00043e\u00043b\u00043d\u000435\u00043d\u000438\u000435
+    const expPercent = this.player ? (this.player.xp % 100) / 100 : 0;
+    ctx.fillStyle = '#4caf50';
+    ctx.fillRect(x + 2, y + 2, 196 * expPercent, 16);
+    
+    // \u000422\u000435\u00043a\u000441\u000442
+    ctx.fillStyle = '#fff';
+    ctx.font = '10px Georgia';
+    ctx.textAlign = 'center';
+    ctx.fillText(`EXP: ${this.player ? this.player.xp : 0}`, x + 100, y + 14);
+    ctx.textAlign = 'left';
+  }
+
+  /**
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000443\u000440\u00043e\u000432\u000435\u00043d\u00044c
+   * @param {CanvasRenderingContext2D} ctx
+   * @private
+   */
+  renderLevel(ctx) {
+    const x = this.game.width - 100;
+    const y = this.game.height - 60;
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(x, y, 80, 20);
+    
+    ctx.strokeStyle = '#d4af37';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, 80, 20);
+    
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 12px Georgia';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Lv. ${this.player ? this.player.floor : 1}`, x + 40, y + 14);
+    ctx.textAlign = 'left';
+  }
+
+  /**
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000441\u000442\u000430\u000442\u000443\u000441\u00044b
+   * @param {CanvasRenderingContext2D} ctx
+   * @private
+   */
+  renderStatusEffects(ctx) {
+    if (!this.player.statusEffects || this.player.statusEffects.length === 0) return;
+    
+    const x = 20;
+    let y = this.game.height - 100;
+    
+    for (const effect of this.player.statusEffects) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(x, y, 150, 20);
+      
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, 150, 20);
+      
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px Georgia';
+      ctx.textAlign = 'left';
+      ctx.fillText(effect.name, x + 5, y + 14);
+      
+      ctx.textAlign = 'right';
+      ctx.fillText(`${Math.floor(effect.duration)}s`, x + 145, y + 14);
+      ctx.textAlign = 'left';
+      
+      y += 25;
+    }
+  }
+
+  /**
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043e\u000442\u00043b\u000430\u000434\u00043e\u000447\u00043d\u000443\u00044e \u000438\u00043d\u000444\u00043e\u000440\u00043c\u000430\u000446\u000438\u00044e
+   * @param {CanvasRenderingContext2D} ctx
+   * @private
+   */
+  renderDebugInfo(ctx) {
+    const x = 20;
+    const y = this.game.height - 150;
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(x, y, 250, 120);
+    
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, 250, 120);
+    
+    ctx.fillStyle = '#ffd700';
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'left';
+    
+    const player = this.player;
+    if (player) {
+      ctx.fillText(`Pos: (${player.x.toFixed(1)}, ${player.y.toFixed(1)})`, x + 10, y + 20);
+      ctx.fillText(`Speed: (${player.vx.toFixed(1)}, ${player.vy.toFixed(1)})`, x + 10, y + 40);
+      ctx.fillText(`Facing: ${player.facing}`, x + 10, y + 60);
+    }
+    
+    ctx.fillText(`State: ${this.game.state}`, x + 10, y + 80);
+    ctx.fillText(`FPS: ${Math.round(1000 / 16.67)}`, x + 10, y + 100);
     
     ctx.textAlign = 'left';
   }

@@ -3,7 +3,8 @@ import { GameLoop } from './GameLoop.js';
 
 /**
  * \u000413\u00043b\u000430\u000432\u00043d\u00044b\u000439 \u00043a\u00043b\u000430\u000441\u000441 \u000438\u000433\u000440\u00044b
- * \u000423\u00043f\u000440\u000430\u000432\u00043b\u00044f\u000435\u000442 \u000441\u00043e\u000441\u000442\u00043e\u00044f\u00043d\u000438\u000435\u00043c \u000438\u000433\u000440\u00044b \u000438 \u00043a\u00043e\u00043e\u000440\u000434\u000438\u00043d\u000438\u000440\u000443\u000435\u000442 \u000441\u000438\u000441\u000442\u000435\u00043c\u00044b \u000432\u000441\u000435 \u000441\u000438\u000441\u000442\u000435\u00043c\u000430\u00043c\u000438
+ * \u000423\u00043f\u000440\u000430\u000432\u00043b\u00044f\u000435\u000442 \u000441\u00043e\u000441\u000442\u00043e\u00044f\u00043d\u000438\u000435\u00043c \u000438\u000433\u000440\u00044b \u000438 \u00043a\u00043e\u00043e\u000440\u000434\u000438\u00043d\u000438\u000440\u000443\u000435\u000442 \u000441\u000438\u000441\u000442\u000435\u00043c\u000430\u00043c\u000438
+ * TOPDOWN game - world is larger than screen, camera follows player
  * @class Game
  */
 export class Game {
@@ -20,6 +21,10 @@ export class Game {
     
     // \u000418\u00043d\u000438\u000446\u000438\u000430\u00043b\u000438\u000437\u000430\u000446\u000438\u00044f \u000432\u000440\u000435\u00043c\u000435\u00043d\u000438 \u00043e\u000442\u000440\u000438\u000441\u00043e\u000432\u00043a\u000438 FPS
     this.lastFrameTime = 0;
+    
+    // TOPDOWN: World size is larger than viewport
+    this.worldWidth = 2000;
+    this.worldHeight = 2000;
     
     this.setupCanvas();
     this.setupGameLoop();
@@ -99,15 +104,20 @@ export class Game {
 
   /**
    * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000438\u000433\u000440\u000443
+   * TOPDOWN: Only render background once, game entities are rendered with camera transform
    */
   render() {
-    // \u000413\u000435\u00043d\u000435\u000440\u000430\u000446\u000438\u00044f \u000446\u000443\u00043c\u000430\u000442 Perlin \u000434\u00043b\u00044f \u000444\u00043e\u00043d\u000430
+    // Clear entire canvas
+    this.ctx.fillStyle = '#0a0a1a';
+    this.ctx.fillRect(0, 0, this.width, this.height);
+    
+    // Render cave background (only once, not transformed)
     this.renderCaveBackground();
     
-    // \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000441\u000438\u000441\u000442\u000435\u00043c
+    // Render game entities with camera transform
     this.events.emit('game:render', this.ctx);
     
-    // \u00041e\u000442\u00043e\u000440\u000430\u000436\u000435\u00043d\u000438\u000435 \u00043e\u000442\u00043b\u000430\u000434\u00043e\u000447\u00043d\u000430\u00044f \u000438\u00043d\u000444\u00043e\u000440\u00043c\u000430\u000446\u000438\u00044f
+    // Debug info overlay
     if (this.debugMode) {
       this.renderDebugInfo();
     }
@@ -122,14 +132,17 @@ export class Game {
     const ctx = this.ctx;
     const tileSize = 64;
     
-    // \u000414\u00043e\u000431\u000430\u000432\u00043b\u000435\u00043d\u000438\u000435 \u000442\u000435\u00043a\u000441\u000442\u000443\u000440\u00044b
-    for (let y = 0; y < this.height + tileSize; y += tileSize) {
-      for (let x = 0; x < this.width + tileSize; x += tileSize) {
+    // TOPDOWN: Render background based on camera position
+    const camera = this.camera || { x: 0, y: 0 };
+    const startX = Math.floor(camera.x / tileSize) * tileSize;
+    const startY = Math.floor(camera.y / tileSize) * tileSize;
+    
+    for (let y = startY; y < camera.y + this.height + tileSize; y += tileSize) {
+      for (let x = startX; x < camera.x + this.width + tileSize; x += tileSize) {
         const noiseX = x * 0.02;
         const noiseY = y * 0.02;
         const noiseValue = Math.sin(noiseX) * Math.cos(noiseY) * 0.5 + 0.5;
         
-        // \u00041f\u000440\u000435\u000432\u000440\u000430\u000448\u000441\u000430 \u000432 \u000446\u000432\u000435\u000442
         let color;
         if (noiseValue < 0.3) {
           color = '#1a1a2e';
@@ -144,7 +157,7 @@ export class Game {
         }
         
         ctx.fillStyle = color;
-        ctx.fillRect(x, y, tileSize, tileSize);
+        ctx.fillRect(x - camera.x, y - camera.y, tileSize, tileSize);
       }
     }
   }
@@ -164,7 +177,7 @@ export class Game {
     
     ctx.fillStyle = '#ffd700';
     ctx.font = '12px Arial';
-    ctx.fillText(`FPS: ${Math.round(1000 / (performance.now() - (this.lastFrameTime || 0)))}`, 20, 30);
+    ctx.fillText(`FPS: ${Math.round(1000 / (performance.now() - (this.lastFrameTime || 16)))}`, 20, 30);
     ctx.fillText(`State: ${this.state}`, 20, 50);
     ctx.fillText(`Resolution: ${this.width}x${this.height}`, 20, 70);
     ctx.fillText(`Debug: ON`, 20, 90);
@@ -225,7 +238,9 @@ export class Game {
       width: this.width,
       height: this.height,
       debugMode: this.debugMode,
-      frameTime: this.lastFrameTime
+      frameTime: this.lastFrameTime,
+      worldWidth: this.worldWidth,
+      worldHeight: this.worldHeight
     };
   }
 
