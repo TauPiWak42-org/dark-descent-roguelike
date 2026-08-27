@@ -1,0 +1,17 @@
+{
+  "name": "dark-descent-roguelike",
+  "version": "1.0.0",
+  "description": "Roguelike game inspired by Noita with dark fantasy theme",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["roguelike", "game", "dark-fantasy", "noita-like"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}
