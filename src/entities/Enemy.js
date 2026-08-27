@@ -183,4 +183,54 @@ export class Enemy {
 
   /**
    * Отрисовка врага
-   * @param {CanvasRenderingContext2D} ctx - Кон
+   * @param {CanvasRenderingContext2D} ctx - Контекст canvas
+   */
+  render(ctx) {
+    if (!this.isAlive) return;
+    
+    ctx.save();
+    
+    // Мигание при получении урона
+    if (this.hitCooldown > 0 && Math.floor(this.hitCooldown * 10) % 2 === 0) {
+      ctx.fillStyle = '#ffffff';
+    } else {
+      // Цвет в зависимости от типа
+      const colors = {
+        skeleton: '#d0d0d0',
+        zombie: '#556b2f',
+        demon: '#8b0000',
+        ghost: 'rgba(155, 89, 182, 0.7)'
+      };
+      ctx.fillStyle = colors[this.type] || '#d0d0d0';
+    }
+    
+    // Тело
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+    
+    // Золотая окантовка для агрессивных
+    if (this.isAggressive) {
+      ctx.strokeStyle = '#ffd700';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(this.x, this.y, this.width, this.height);
+    }
+    
+    // Глаза
+    ctx.fillStyle = '#ff0000';
+    const eyeY = this.y + 8;
+    const eyeOffset = this.target && this.target.x < this.x ? 4 : 18;
+    
+    ctx.fillRect(this.x + eyeOffset, eyeY, 5, 5);
+    ctx.fillRect(this.x + eyeOffset, eyeY + 10, 5, 5);
+    
+    // Свечение глаз для агрессивных
+    if (this.isAggressive) {
+      ctx.shadowColor = '#ff0000';
+      ctx.shadowBlur = 5;
+      ctx.fillRect(this.x + eyeOffset, eyeY, 5, 5);
+      ctx.fillRect(this.x + eyeOffset, eyeY + 10, 5, 5);
+      ctx.shadowBlur = 0;
+    }
+    
+    ctx.restore();
+  }
+}
