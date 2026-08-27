@@ -1,33 +1,33 @@
 /**
- * Базовый класс врага
+ * \u0411\u0430\u0437\u043e\u0432\u044b\u0439 \u043a\u043b\u0430\u0441\u0441 \u0432\u0440\u0430\u0433\u0430
  * @class Enemy
  */
 export class Enemy {
   /**
-   * @param {Game} game - Ссылка на игру
-   * @param {number} x - Позиция X
-   * @param {number} y - Позиция Y
-   * @param {string} type - Тип врага
+   * @param {Game} game - \u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0438\u0433\u0440\u0443
+   * @param {number} x - \u041f\u043e\u0437\u0438\u0446\u0438\u044f X
+   * @param {number} y - \u041f\u043e\u0437\u0438\u0446\u0438\u044f Y
+   * @param {string} type - \u0422\u0438\u043f \u0432\u0440\u0430\u0433\u0430
    */
   constructor(game, x, y, type = 'skeleton') {
     this.game = game;
     this.events = game.events;
     
-    // Позиция
+    // \u041f\u043e\u0437\u0438\u0446\u0438\u044f
     this.x = x;
     this.y = y;
     this.vx = 0;
     this.vy = 0;
     
-    // Размеры
+    // \u0420\u0430\u0437\u043c\u0435\u0440\u044b
     this.width = 28;
     this.height = 28;
     
-    // Тип и характеристики
+    // \u0422\u0438\u043f \u0438 \u0445\u0430\u0440\u0430\u043a\u0442\u0435\u0440\u0438\u0441\u0442\u0438\u043a\u0438
     this.type = type;
     this.setupStats();
     
-    // Состояние
+    // \u0421\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435
     this.isAlive = true;
     this.isAggressive = false;
     this.attackCooldown = 0;
@@ -35,12 +35,12 @@ export class Enemy {
     this.wanderTimer = 0;
     this.wanderAngle = Math.random() * Math.PI * 2;
     
-    // Цель
+    // \u0426\u0435\u043b\u044c
     this.target = null;
   }
 
   /**
-   * Настройка характеристик в зависимости от типа
+   * \u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430 \u0445\u0430\u0440\u0430\u043a\u0442\u0435\u0440\u0438\u0441\u0442\u0438\u043a \u0432 \u0437\u0430\u0432\u0438\u0441\u0438\u043c\u043e\u0441\u0442\u0438 \u043e\u0442 \u0442\u0438\u043f\u0430
    * @private
    */
   setupStats() {
@@ -68,57 +68,57 @@ export class Enemy {
   }
 
   /**
-   * Установка цели для преследования
-   * @param {Player} player - Игрок
+   * \u0423\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0430 \u0446\u0435\u043b\u0438 \u0434\u043b\u044f \u043f\u0440\u0435\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u044f
+   * @param {Player} player - \u0418\u0433\u0440\u043e\u043a
    */
   setTarget(player) {
     this.target = player;
   }
 
   /**
-   * Обновление состояния врага
-   * @param {number} deltaTime - Время с прошлого кадра
+   * \u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0441\u043e\u0441\u0444\u043e\u044f\u043d\u0438\u044f \u0432\u0440\u0430\u0433\u0430
+   * @param {number} deltaTime - \u0412\u0440\u0435\u043c\u044f \u0441 \u043f\u0440\u043e\u0448\u043b\u043e\u0433\u043e \u043a\u0430\u0434\u0440\u0430
    */
   update(deltaTime) {
     if (!this.isAlive || !this.target) return;
     
-    // Сброс скорости
+    // \u0421\u0431\u0440\u043e\u0441 \u0441\u043a\u043e\u0440\u043e\u0441\u0442\u0438
     this.vx = 0;
     this.vy = 0;
     
-    // Расстояние до цели
+    // \u0420\u0430\u0441\u0441\u0442\u043e\u044f\u043d\u0438\u0435 \u0434\u043f \u0446\u0435\u043b\u0438
     const dx = this.target.x - this.x;
     const dy = this.target.y - this.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     
-    // Проверка обнаружения
+    // \u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u043e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u0438\u044f
     if (distance < this.detectionRange) {
       this.isAggressive = true;
     }
     
     if (this.isAggressive) {
-      // Преследование
+      // \u041f\u0440\u0435\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u0435
       if (distance > this.attackRange) {
         const angle = Math.atan2(dy, dx);
         this.vx = Math.cos(angle) * this.speed;
         this.vy = Math.sin(angle) * this.speed;
       }
       
-      // Атака
+      // \u0410\u0442\u0430\u043a\u0430
       if (distance <= this.attackRange && this.attackCooldown <= 0) {
         this.attack();
         this.attackCooldown = 1;
       }
     } else {
-      // Случайное блуждание
+      // \u0421\u043b\u0441\u0443\u0447\u0430\u0439\u043d\u043e\u0435 \u0431\u043b\u0443\u0436\u0434\u0430\u043d\u0438\u0435
       this.wander(deltaTime);
     }
     
-    // Обновление позиции
+    // \u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u043f\u043e\u0437\u0438\u0446\u0438\u0438
     this.x += this.vx * deltaTime;
     this.y += this.vy * deltaTime;
     
-    // Обновление кулдаунов
+    // \u041e\u0431\u043d\u043e\u0432\u043c\u0435\u043d\u0438\u0435 \u043a\u0443\u043c\u0434\u0430\u0443\u043d\u043f\u0432
     if (this.attackCooldown > 0) {
       this.attackCooldown -= deltaTime;
     }
@@ -128,53 +128,7 @@ export class Enemy {
   }
 
   /**
-   * Случайное блуждание
-   * @param {number} deltaTime - Время с прошлого кадра
-   * @private
-   */
-  wander(deltaTime) {
-    this.wanderTimer -= deltaTime;
-    
-    if (this.wanderTimer <= 0) {
-      this.wanderTimer = 1 + Math.random() * 2;
-      this.wanderAngle = Math.random() * Math.PI * 2;
-    }
-    
-    this.vx = Math.cos(this.wanderAngle) * this.speed * 0.3;
-    this.vy = Math.sin(this.wanderAngle) * this.speed * 0.3;
-  }
-
-  /**
-   * Атака цели
-   */
-  attack() {
-    if (this.target && this.target.isAlive) {
-      this.target.takeDamage(this.damage);
-      this.events.emit('enemy:attack', { enemy: this, damage: this.damage });
-    }
-  }
-
-  /**
-   * Получение урона
-   * @param {number} damage - Количество урона
-   */
-  takeDamage(damage) {
-    if (!this.isAlive) return;
-    
-    this.health -= damage;
-    this.hitCooldown = 0.2;
-    this.isAggressive = true;
-    
-    this.events.emit('enemy:damaged', { enemy: this, damage });
-    
-    if (this.health <= 0) {
-      this.health = 0;
-      this.die();
-    }
-  }
-
-  /**
-   * Смерть врага
+   * \u0421\u043c\u0435\u0440\u0442\u044c \u0432\u0440\u0430\u0433\u0430
    */
   die() {
     this.isAlive = false;
@@ -182,55 +136,28 @@ export class Enemy {
   }
 
   /**
-   * Отрисовка врага
-   * @param {CanvasRenderingContext2D} ctx - Контекст canvas
+   * \u041e\u0442\u0440\u0438\u0441\u043e\u0432\u043b\u0430 \u0432\u0440\u0430\u0432\u0430
+   * @param {CanvasRenderingContext2D} ctx - \u041a\u043e\u043d\u0442\u0435\u043b\u0441\u0442 canvas
    */
   render(ctx) {
     if (!this.isAlive) return;
     
-    ctx.save();
-    
-    // Мигание при получении урона
-    if (this.hitCooldown > 0 && Math.floor(this.hitCooldown * 10) % 2 === 0) {
-      ctx.fillStyle = '#ffffff';
-    } else {
-      // Цвет в зависимости от типа
-      const colors = {
-        skeleton: '#d0d0d0',
-        zombie: '#556b2f',
-        demon: '#8b0000',
-        ghost: 'rgba(155, 89, 182, 0.7)'
-      };
-      ctx.fillStyle = colors[this.type] || '#d0d0d0';
+    // \u0412\u044b\u0431\u043b\u043e\u0440 \u0446\u0432\u0435\u0442\u0430 \u0432 \u0437\u0430\u0432\u0438\u0441\u0438\u043c\u043e\u0441\u0442\u0438 \u043e\u0442 \u0442\u0438\u043f\u0430 \u0432\u0440\u0430\u0433\u0430
+    let color;
+    switch(this.type) {
+      case 'skeleton': color = '#e0e0e0'; break;
+      case 'zombie': color = '#2e8b57'; break;
+      case 'demon': color = '#ff0000'; break;
+      case 'ghost': color = '#9370db'; break;
+      default: color = '#cccccc';
     }
     
-    // Тело
+    ctx.fillStyle = color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
     
-    // Золотая окантовка для агрессивных
-    if (this.isAggressive) {
-      ctx.strokeStyle = '#ffd700';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(this.x, this.y, this.width, this.height);
-    }
-    
-    // Глаза
-    ctx.fillStyle = '#ff0000';
-    const eyeY = this.y + 8;
-    const eyeOffset = this.target && this.target.x < this.x ? 4 : 18;
-    
-    ctx.fillRect(this.x + eyeOffset, eyeY, 5, 5);
-    ctx.fillRect(this.x + eyeOffset, eyeY + 10, 5, 5);
-    
-    // Свечение глаз для агрессивных
-    if (this.isAggressive) {
-      ctx.shadowColor = '#ff0000';
-      ctx.shadowBlur = 5;
-      ctx.fillRect(this.x + eyeOffset, eyeY, 5, 5);
-      ctx.fillRect(this.x + eyeOffset, eyeY + 10, 5, 5);
-      ctx.shadowBlur = 0;
-    }
-    
-    ctx.restore();
+    // \u0413\u0440\u0430\u043d\u0438\u0446\u0430
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
   }
 }
