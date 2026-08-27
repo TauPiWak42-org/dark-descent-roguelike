@@ -1,7 +1,7 @@
 /**
  * ItemManager
- * 1c353d3534363540 3f4035343c35423e32
- * 233f4030323b4f3542 413f30323d4b3c 38 4030413f3b3e36353d3835 3f4035343c35423e32
+ * \u00041c\u000435\u00043d\u000435\u000434\u000436\u000435\u000440 \u00043f\u000440\u000435\u000434\u00043c\u000435\u000442\u00043e\u000432
+ * \u000423\u00043f\u000440\u000430\u000432\u00043b\u00044f\u000435\u000442 \u000441\u00043f\u000430\u000432\u00043d\u00043e\u00043c \u000438 \u000440\u000430\u000441\u00043f\u00043e\u00043b\u00043e\u000436\u000435\u00043d\u000438\u00044f \u00043f\u000440\u000435\u000434\u00043c\u000435\u000442\u00043e\u000432
  * @class ItemManager
  */
 export class ItemManager {
@@ -12,13 +12,13 @@ export class ItemManager {
     
     this.items = [];
     this.spawnTimer = 0;
-    this.spawnInterval = 5; // 41353a433d344b 3c35363443 413f30323d303c
+    this.spawnInterval = 5; // \u000441\u000435\u00043a\u000443\u00043d\u000434\u00044b \u00043c\u000435\u000436\u000434\u000443 \u000441\u00043f\u000430\u000432\u00043d\u000430\u00043c
     
     this.setupEvents();
   }
 
   /**
-   * 1d304142403e393a30 413e314b423839
+   * \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000441\u00043e\u000431\u00044b\u000442\u000438\u000439
    * @private
    */
   setupEvents() {
@@ -28,67 +28,69 @@ export class ItemManager {
   }
 
   /**
-   * 213f30323d 3f4035343c3542
+   * \u000421\u00043f\u000430\u000432\u00043d \u00043f\u000440\u000435\u000434\u00043c\u000435\u000442\u000430
    * @param {number} x
    * @param {number} y
    * @param {string} type
    * @returns {Item}
    */
-  async spawnItem(x, y, type) {
-    const { Item } = await import('../entities/Item.js');
+  spawnItem(x, y, type) {
+    // \u000418\u00043c\u00043f\u00043e\u000440\u000442\u000438\u000440\u000443\u000435\u00043c \u000438\u000437 \u000433\u00043b\u00043e\u000431\u000430\u00043b\u00044c\u00043d\u00043e\u000433\u00043e \u00043e\u000431\u00044a\u000435\u00043a\u000442\u000430
+    // \u00041d\u000435 \u000438\u000441\u00043f\u00043e\u00043b\u00044c\u000437\u000443\u000435\u00043c async/await - \u000431\u00043b\u00043e\u00043a\u000438\u000440\u000443\u000435\u000442 \u000438\u000433\u000440\u00043e\u000432\u00043e\u000439 \u000446\u000438\u00043a\u00043b
+    const { Item } = require('../entities/Item.js');
     const item = new Item(this.game, x, y, type);
     this.items.push(item);
     return item;
   }
 
   /**
-   * 213f30323d 3f4035343c354230 32 413b434730393d3e3c 3c35414235
+   * \u000421\u00043f\u000430\u000432\u00043d \u00043f\u000440\u000435\u000434\u00043c\u000435\u000442\u000430 \u000432 \u000441\u00043b\u000443\u000447\u000430\u000439\u00043d\u00043e\u00043c \u00043c\u000435\u000441\u000442\u000435
    * @param {Object} data
    * @private
    */
-  async onEnemyDied(data) {
+  onEnemyDied(data) {
     const { enemy } = data;
     
-    // 20% 48303d41 413f303230 3f4035343c354230
+    // 20% \u000448\u000430\u00043d\u000441 \u000441\u00043f\u000430\u000432\u000430 \u00043f\u000440\u000435\u000434\u00043c\u000435\u000442\u000430
     if (Math.random() < 0.2) {
       const types = ['potion', 'healing_potion', 'artifact', 'staff', 'wand', 'scroll', 'gem'];
       const type = types[Math.floor(Math.random() * types.length)];
-      await this.spawnItem(enemy.x, enemy.y, type);
+      this.spawnItem(enemy.x, enemy.y, type);
     }
   }
 
   /**
-   * 1e313d3e323b353d3835 303242303c3042384730
+   * \u00041e\u000431\u00043d\u00043e\u000432\u00043b\u000435\u00043d\u000438\u000435 \u000430\u000432\u000442\u00043e\u00043c\u000430\u000442\u000438\u000447\u000430
    * @param {number} deltaTime
    */
-  async update(deltaTime) {
+  update(deltaTime) {
     this.spawnTimer += deltaTime;
     
-    // 1f3540383e343847353d3835 413f30323d 3d3e324b45 3f4035343c35423e32
+    // \u00041f\u000435\u000440\u000438\u00043e\u000434\u000438\u000447\u000435\u00043d\u000438\u000435 \u000441\u00043f\u000430\u000432\u00043d \u00043d\u00043e\u000432\u00044b\u000445 \u00043f\u000440\u000435\u000434\u00043c\u000435\u000442\u00043e\u000432
     if (this.spawnTimer >= this.spawnInterval) {
       this.spawnTimer = 0;
       const types = ['potion', 'healing_potion', 'gem'];
       const type = types[Math.floor(Math.random() * types.length)];
       const x = Math.random() * (this.game.width - 40) + 20;
       const y = Math.random() * (this.game.height - 40) + 20;
-      await this.spawnItem(x, y, type);
+      this.spawnItem(x, y, type);
     }
     
     for (const item of this.items) {
       item.update(deltaTime);
       
-      // 1f403e3235403a30 41313e403041423230 41 3833403a3e3c
+      // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u000431\u00043e\u000440\u000430\u000441\u000442\u000430 \u000441 \u000438\u000433\u000440\u00043e\u00043a\u00043e\u00043c
       if (this.checkCollision(item, this.player) && !item.isCollected) {
         item.collect(this.player);
       }
     }
     
-    // 2334303b353d3835 413e3140303d3d4b35 3f4035343c35423042
+    // \u000423\u000434\u000430\u00043b\u000435\u00043d\u000438\u000435 \u000441\u00043e\u000431\u000440\u000430\u00043d\u00043d\u00044b\u000435 \u00043f\u000440\u000435\u000434\u00043c\u000435\u000442\u000430\u000442
     this.items = this.items.filter(item => !item.isCollected || item.collectTimer > 0);
   }
 
   /**
-   * 1f403e3235403a30 41323e3b414232353d384f
+   * \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u000432\u00043e\u00043b\u000441\u000442\u000432\u000430
    * @param {Object} item
    * @param {Object} target
    * @returns {boolean}
@@ -104,7 +106,7 @@ export class ItemManager {
   }
 
   /**
-   * 1e424038413e323030 3f4035343c35423e32
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043f\u000440\u000435\u000434\u00043c\u000435\u000442\u00043e\u000432
    * @param {CanvasRenderingContext2D} ctx
    */
   render(ctx) {
@@ -114,7 +116,7 @@ export class ItemManager {
   }
 
   /**
-   * 1e473841423a30 413f38413a30 36353b3e32
+   * \u00041e\u000447\u000438\u000441\u000442\u00043a\u000430 \u000441\u00043f\u000438\u000441\u00043a\u000430 36\u000435\u00043b\u00043e\u000432
    */
   clear() {
     this.items = [];
