@@ -83,10 +83,7 @@ export class EnemyManager {
   onEnemyDied(data) {
     const { enemy } = data;
     
-    // Выдача наград
-    this.player.addGold(enemy.goldValue);
-    this.player.addSouls(enemy.soulValue);
-    
+    // Награда уже выдана в Enemy.die(), здесь только удаление из списка
     // Удаление из списка
     const index = this.enemies.indexOf(enemy);
     if (index > -1) {
