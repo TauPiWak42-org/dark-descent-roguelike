@@ -273,12 +273,14 @@ export class HUD {
    * @private
    */
   renderStatusEffects(ctx) {
-    if (!this.player.statusEffects || this.player.statusEffects.length === 0) return;
+    // statusEffects не существует в Player, проверяем наличие метода
+    if (!this.player.getStatusEffects || !this.player.getStatusEffects()) return;
     
     const x = 20;
     let y = this.game.height - 100;
     
-    for (const effect of this.player.statusEffects) {
+    const effects = this.player.getStatusEffects();
+    for (const effect of effects) {
       ctx.fillStyle = 'rgba(26, 26, 46, 0.7)';
       ctx.fillRect(x, y, 150, 20);
       
