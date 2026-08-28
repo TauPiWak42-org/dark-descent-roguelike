@@ -87,15 +87,19 @@ export class CombatSystem {
     this.player.mana -= 5;
     this.events.emit('player:mana', { mana: this.player.mana });
     
-    // Направление атаки по мышке относительно центра экрана
-    const angle = Math.atan2(
-      this.mouseY - this.game.height / 2,
-      this.mouseX - this.game.width / 2
-    );
+    // Направление атаки: от игрока к курсору мыши (в мировых координатах)
+    const playerCenterX = this.player.x + this.player.width / 2;
+    const playerCenterY = this.player.y + this.player.height / 2;
+    
+    // Курсор в мировых координатах
+    const worldMouseX = this.mouseX + this.game.camera.x;
+    const worldMouseY = this.mouseY + this.game.camera.y;
+    
+    const angle = Math.atan2(worldMouseY - playerCenterY, worldMouseX - playerCenterX);
     
     this.projectiles.push({
-      x: this.player.x + this.player.width / 2,
-      y: this.player.y + this.player.height / 2,
+      x: playerCenterX,
+      y: playerCenterY,
       vx: Math.cos(angle) * 300,
       vy: Math.sin(angle) * 300,
       damage: this.player.damage,

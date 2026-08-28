@@ -166,14 +166,16 @@ export class Player {
     const centerY = this.y + this.height / 2;
     const arrowLength = 25;
     
-    // Определяем направление по углу мыши относительно центра экрана
+    // Определяем направление по углу мыши относительно игрока (в мировых координатах)
     let arrowAngle = 0;
     if (this.game.combatSystem) {
       const mouseX = this.game.combatSystem.mouseX;
       const mouseY = this.game.combatSystem.mouseY;
-      const screenCenterX = this.game.width / 2;
-      const screenCenterY = this.game.height / 2;
-      arrowAngle = Math.atan2(mouseY - screenCenterY, mouseX - screenCenterX);
+      // Курсор в мировых координатах
+      const worldMouseX = mouseX + this.game.camera.x;
+      const worldMouseY = mouseY + this.game.camera.y;
+      // Угол от игрока к курсору
+      arrowAngle = Math.atan2(worldMouseY - centerY, worldMouseX - centerX);
     } else {
       arrowAngle = this.facing === 'right' ? 0 : Math.PI;
     }
