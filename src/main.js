@@ -90,9 +90,9 @@ game.events.on('game:update', (deltaTime) => {
   itemManager.update(deltaTime);
 });
 
-// \u00041f\u00043e\u000434\u00043f\u000438\u000441\u00043a\u000430 \u00043d\u000430 \u000440\u000435\u00043d\u000434\u000435\u000440\u000438\u00043d\u000433\u000443
+// Подписка на рендеринг
 game.events.on('game:render', (ctx) => {
-  // \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000441 \u00043e\u00043f\u000442\u000438\u00043c\u000438\u000437\u000430\u000446\u000438\u000435\u000439
+  // Отрисовка с оптимизацией
   renderOptimizer.optimizeRender(() => {
     camera.applyTransform(ctx);
     mapGenerator.render(ctx, camera);
@@ -103,7 +103,7 @@ game.events.on('game:render', (ctx) => {
     particleSystem.render(ctx);
     camera.resetTransform(ctx);
     
-    // \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c UI
+    // Отрисовка UI
     hud.render(ctx);
     settingsUI.render(ctx);
   });

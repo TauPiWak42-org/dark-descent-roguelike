@@ -124,51 +124,6 @@ export class Game {
     }
   }
 
-  /**
-   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000444\u00043e\u00043d\u000430\u000432\u00044b \u00043f\u000435\u000449\u000435\u000440\u00043d\u000438\u00044b \u000448\u000443\u00043c
-   * \u000418\u000441\u00043f\u00043e\u00043b\u00044c\u000437\u00043e\u000432\u000430\u00044b Perlin \u000448\u000443\u00043c \u000434\u00043b\u00044f \u000442\u000435\u00043a\u000441\u000442\u000443\u000440\u00044b
-   * \u000426\u000432\u000435\u000442: #1a1a2e, #16213e, #1f1f2e
-   * @private
-   */
-  renderCaveBackground() {
-    const ctx = this.ctx;
-    const tileSize = 64;
-    
-    // TOPDOWN: Render background based on camera position
-    const camera = this.camera || { x: 0, y: 0 };
-    const startX = Math.floor(camera.x / tileSize) * tileSize;
-    const startY = Math.floor(camera.y / tileSize) * tileSize;
-    
-    for (let y = startY; y < camera.y + this.height + tileSize; y += tileSize) {
-      for (let x = startX; x < camera.x + this.width + tileSize; x += tileSize) {
-        const noiseX = x * 0.02;
-        const noiseY = y * 0.02;
-        const noiseValue = Math.sin(noiseX) * Math.cos(noiseY) * 0.5 + 0.5;
-        
-        let color;
-        if (noiseValue < 0.3) {
-          color = '#16213e';
-        } else if (noiseValue < 0.45) {
-          color = '#1a1a2e';
-        } else if (noiseValue < 0.6) {
-          color = '#1f1f2e';
-        } else if (noiseValue < 0.75) {
-          color = '#2d1b00';
-        } else {
-          color = '#4a3520';
-        }
-        
-        ctx.fillStyle = color;
-        ctx.fillRect(x - camera.x, y - camera.y, tileSize, tileSize);
-        
-        // \u000410\u000442\u00043c\u00043e\u000441\u000444\u000435\u000440\u00043d\u00044b\u000435 \u000448\u000443\u00043c: \u000437\u00043e\u00043b\u00043e\u000442\u00044b\u000435 \u00043f\u000440\u00043e\u000436\u000438\u00043b\u00043a\u000438
-        if (Math.random() < 0.02) {
-          ctx.fillStyle = 'rgba(212, 175, 55, 0.1)';
-          ctx.fillRect(x - camera.x + Math.random() * 40, y - camera.y + Math.random() * 40, 8, 8);
-        }
-      }
-    }
-  }
 
   /**
    * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043b\u000435\u000433\u00043a\u000443\u00044e \u000432\u000438\u00043d\u00044c\u000435\u000442\u000442\u000443
