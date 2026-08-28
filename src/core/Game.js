@@ -106,18 +106,13 @@ export class Game {
   }
 
   /**
-   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000438\u000433\u000440\u000443
-   * TOPDOWN: Only render background once, game entities are rendered with camera transform
+   * TOPDOWN: Background is rendered by MapGenerator, entities with camera transform
    */
   render() {
     // Clear entire canvas with dark background
     this.ctx.fillStyle = '#0a0a15';
     this.ctx.fillRect(0, 0, this.width, this.height);
     
-    // Render cave background (only once, not transformed)
-    
-    
-    // Render game entities with camera transform
     this.events.emit('game:render', this.ctx);
     
     // Add subtle vignette effect
