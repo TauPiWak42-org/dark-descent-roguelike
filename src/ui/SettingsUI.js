@@ -1,7 +1,9 @@
 /**
  * SettingsUI
- * \u00041a\u00043e\u00043c\u00043f\u00043e\u00043d\u000435\u00043d\u000442 \u00043d\u000430\u000441\u000442\u000440\u00043e\u000435\u00043a \u000441 \u000432\u00044b\u00043f\u000430\u000434\u000430\u00044e\u000449\u000438\u00043c \u000441\u00043f\u000438\u000441\u00043a\u00043e\u00043c
+ * \u00041a\u00043e\u00043c\u00043f\u00043e\u00043d\u000435\u00043d\u000442 \u00043d\u000430\u000441\u000442\u000440\u00043e\u000435\u00043a \u000441 \u000432\u00044b\u00043f\u000430\u000434\u00043a\u00043e\u000439 \u000441\u00043f\u000438\u000441\u00043a\u00043e\u00043c
  * TOPDOWN game
+ * \u000426\u000432\u000435\u000442\u000430\u00044f \u00043f\u000430\u00043b\u000438\u000442\u000440\u000430: #1a1a2e, #16213e, #1f1f2e
+ * \u000417\u00043e\u00043b\u00043e\u000442\u000430: #d4af37, #ffd700, #8b6914
  * @class SettingsUI
  */
 export class SettingsUI {
@@ -76,30 +78,32 @@ export class SettingsUI {
     
     // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u00043c\u00044b\u000448\u000438 \u000432 \u00043e\u000434\u00043d\u00043e\u00043c \u00043c\u00043e\u000432\u000435\u00043d\u000442\u000430
     if (this.game.input) {
-      const { mouseX, mouseY, isMousePressed, isMouseReleased } = this.game.input;
+      const mouseX = this.game.input.getMousePosition().x;
+      const mouseY = this.game.input.getMousePosition().y;
+      const isMousePressed = this.game.input.isMousePressed();
       const mouseDown = this.game.input.isMouseDown();
       
-      // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u00043d\u000430\u000436\u000430\u000442\u000438\u00044f \u00043d\u000430 \u00043a\u00043d\u00043e\u00043f\u00043a\u000443 \u000441\u000435\u000442\u000442\u000438\u00043d\u000433\u00043e\u000432
+      // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u00043d\u000430\u000436\u000430\u000442\u000438\u00044f \u00043d\u000430 \u00043a\u00043d\u00043e\u00043f\u00043a\u000443 \u000441\u000435\u000442\u000442\u000438\u00043d\u000437\u00043e\u000432
       const gearButtonClicked = this.isPointInRect(mouseX, mouseY, this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight);
       
-      // \u00041e\u000431\u000440\u000430\u000431\u00043e\u000442\u000430 \u00043d\u000430 \u000436\u000430\u000442\u000438\u000441\u00043a\u000443 \u00043d\u000430 \u00043a\u00043d\u00043e\u00043f\u00043a\u000443
-      if (isMousePressed() && gearButtonClicked) {
+      // Toggle settings panel on gear button click
+      if (isMousePressed && gearButtonClicked) {
         this.isOpen = !this.isOpen;
         this.wasMouseDownOnButton = true;
       }
       
-      // \u00041e\u000431\u000440\u000430\u000431\u00043e\u000442\u000430 \u00043d\u000430\u000441\u000442\u000440\u00043e\u000435\u00043a \u000432 \u00043e\u000442\u00043a\u000440\u00044b\u000442\u00043e\u00043c \u00043f\u000430\u00043d\u000435\u00043b\u000438
-      if (this.isOpen && isMousePressed() && !this.wasMouseDownOnButton) {
+      // Handle panel clicks when open
+      if (this.isOpen && isMousePressed && !this.wasMouseDownOnButton) {
         const panelClicked = this.isPointInRect(mouseX, mouseY, this.panelX, this.panelY, this.panelWidth, 220);
         if (panelClicked) {
           this.handlePanelClick(mouseX, mouseY);
         } else {
-          // \u000417\u000430\u00043a\u000440\u00044b\u000442\u00044c \u00043f\u000430\u00043b\u00044c \u00043f\u000440\u000438 \u00043a\u00043b\u000438\u00043a\u000435 \u000432\u00043d\u000435 \u00043f\u000430\u00043d\u000435\u00043b\u000438
+          // Close panel if clicking outside
           this.isOpen = false;
         }
       }
       
-      // \u000421\u000431\u000440\u00043e\u000441 \u000444\u00043b\u000430\u000436\u000430\u00043a \u000432 \u00043a\u00043e\u00043d\u000446\u000435 \u00043a\u00043d\u00043e\u00043f\u00043a\u000438
+      // Reset button state
       this.prevMouseDown = mouseDown;
       this.wasMouseDownOnButton = false;
     }
@@ -117,7 +121,7 @@ export class SettingsUI {
     const lineHeight = 30;
     let y = this.panelY + padding;
     
-    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000432\u00043a\u00043b/\u000432\u00044b\u00043a\u00043b \u000437\u000432\u000443\u00043a\u000430
+    // Sound Enable toggle
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding, y, 100, 20)) {
       this.settings.setSoundEnabled(!settings.soundEnabled);
       this.settings.saveSettings();
@@ -125,13 +129,13 @@ export class SettingsUI {
     }
     y += lineHeight;
     
-    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000437\u000432\u000443\u00043a\u000430 (-)
+    // Sound Volume (-)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding, y, 30, 20)) {
       this.settings.decreaseSoundVolume();
       this.settings.saveSettings();
       return;
     }
-    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000437\u000432\u000443\u00043a\u000430 (+)
+    // Sound Volume (+)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding + this.sliderWidth + 40, y, 30, 20)) {
       this.settings.increaseSoundVolume();
       this.settings.saveSettings();
@@ -139,13 +143,13 @@ export class SettingsUI {
     }
     y += lineHeight;
     
-    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000440\u000430\u000437\u00043c\u000435\u000440\u000430 UI (-)
+    // UI Scale (-)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding, y, 30, 20)) {
       this.settings.decreaseUiScale();
       this.settings.saveSettings();
       return;
     }
-    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000440\u000430\u000437\u00043c\u000435\u000440\u000430 UI (+)
+    // UI Scale (+)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding + this.sliderWidth + 40, y, 30, 20)) {
       this.settings.increaseUiScale();
       this.settings.saveSettings();
@@ -153,13 +157,13 @@ export class SettingsUI {
     }
     y += lineHeight;
     
-    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000440\u000430\u000437\u00043c\u000435\u000440 \u000448\u000440\u000438\u000444\u000442\u000430 (-)
+    // Font Scale (-)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding, y, 30, 20)) {
       this.settings.decreaseFontScale();
       this.settings.saveSettings();
       return;
     }
-    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000441\u00043b\u000430\u000439\u000434\u000435\u000440\u000430 \u000440\u000430\u000437\u00043c\u000435\u000440 \u000448\u000440\u000438\u000444\u000442\u000430 (+)
+    // Font Scale (+)
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding + this.sliderWidth + 40, y, 30, 20)) {
       this.settings.increaseFontScale();
       this.settings.saveSettings();
@@ -167,7 +171,7 @@ export class SettingsUI {
     }
     y += lineHeight;
     
-    // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 debug mode
+    // Debug Mode toggle
     if (this.isPointInRect(mouseX, mouseY, this.panelX + padding, y, 100, 20)) {
       const newDebugMode = !settings.debugMode;
       this.settings.setDebugMode(newDebugMode);
@@ -184,7 +188,7 @@ export class SettingsUI {
   render(ctx) {
     const settings = this.settings.getSettings();
     
-    // \u00041a\u00043d\u00043e\u00043f\u00043a\u000430 \u000441\u000435\u000442\u000442\u000438\u00043d\u000433\u00043e\u000432
+    // \u00041a\u00043d\u00043e\u00043f\u00043a\u000430 \u000441\u000435\u000442\u000442\u000438\u00043d\u000437\u00043e\u000432
     this.renderGearButton(ctx);
     
     // \u00041f\u000430\u00043d\u000435\u00043b\u00044c \u00043d\u000430\u000441\u000442\u000440\u00043e\u000435\u00043a
@@ -200,9 +204,10 @@ export class SettingsUI {
    */
   renderGearButton(ctx) {
     ctx.save();
+    ctx.resetTransform();
     
     // \u000424\u00043e\u00043d \u00043a\u00043d\u00043e\u00043f\u00043a\u000438
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillStyle = 'rgba(26, 26, 46, 0.7)';
     ctx.fillRect(this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight);
     
     // \u000417\u00043e\u00043b\u00043e\u000442\u000430\u00044f \u00043e\u00043a\u000440\u000443\u000436\u000430\u00043b\u00043a\u000430
@@ -248,15 +253,17 @@ export class SettingsUI {
    * @param {Object} settings
    * @private
    */
-  renderSettingsPanel(ctx, settings) {
+  renderSettingsPanel(ctx) {
+    const settings = this.settings.getSettings();
     ctx.save();
+    ctx.resetTransform();
     
     const padding = 15;
     const lineHeight = 30;
     let y = this.panelY + padding;
     
     // \u000424\u00043e\u00043d \u00043f\u000430\u00043d\u000435\u00043b\u000438
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+    ctx.fillStyle = 'rgba(26, 26, 46, 0.9)';
     ctx.fillRect(this.panelX, this.panelY, this.panelWidth, 220);
     
     ctx.strokeStyle = '#d4af37';
@@ -317,7 +324,7 @@ export class SettingsUI {
     
     // \u00041f\u000440\u00044f\u00043c\u00043e\u00043f\u00043e\u00043b\u00043d\u00044b\u000439 \u000442\u000443\u000433\u00043c\u00043b\u000435\u000440
     const toggleX = x + width + 20;
-    ctx.fillStyle = enabled ? '#4caf50' : '#555';
+    ctx.fillStyle = enabled ? '#4caf50' : '#6b4c2a';
     ctx.fillRect(toggleX, y, 40, height);
     
     ctx.fillStyle = '#fff';
@@ -328,6 +335,8 @@ export class SettingsUI {
     ctx.strokeStyle = '#d4af37';
     ctx.lineWidth = 1;
     ctx.strokeRect(toggleX, y, 40, height);
+    
+    ctx.textAlign = 'left';
   }
 
   /**
@@ -347,9 +356,9 @@ export class SettingsUI {
     ctx.fillText(label, x, y + 15);
     
     // [-] button
-    ctx.fillStyle = '#555';
+    ctx.fillStyle = '#6b4c2a';
     ctx.fillRect(x + 80, y, 30, 20);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#e0d5c1';
     ctx.font = '14px Georgia';
     ctx.textAlign = 'center';
     ctx.fillText('-', x + 80 + 15, y + 15);
@@ -365,9 +374,9 @@ export class SettingsUI {
     ctx.fillText(`${value}%`, sliderX + this.sliderWidth / 2, y + 15);
     
     // [+] button
-    ctx.fillStyle = '#555';
+    ctx.fillStyle = '#6b4c2a';
     ctx.fillRect(x + 80 + this.sliderWidth + 30, y, 30, 20);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#e0d5c1';
     ctx.font = '14px Georgia';
     ctx.textAlign = 'center';
     ctx.fillText('+', x + 80 + this.sliderWidth + 45, y + 15);
@@ -388,7 +397,7 @@ export class SettingsUI {
    */
   renderSlider(ctx, x, y, width, height, value) {
     // Track
-    ctx.fillStyle = '#444';
+    ctx.fillStyle = '#4a3520';
     ctx.fillRect(x, y + height / 2 - 2, width, 4);
     
     // Fill

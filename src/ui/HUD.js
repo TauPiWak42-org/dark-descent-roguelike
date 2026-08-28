@@ -1,7 +1,12 @@
 /**
  * \u000413\u00043e\u00043b\u00043e\u000432\u000430\u00044f \u000438\u000433\u000440\u00043e\u00043a\u000430
- * \u00041e\u000442\u00043e\u000431\u000440\u000430\u000436\u000435\u00043d\u000438\u000435 \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u000435, \u00043c\u000430\u00043d\u00044b \u000438 \u000434\u000440\u000443\u000433\u000438\u000435
+ * \u00041e\u000442\u00043e\u000431\u000440\u000430\u000436\u000435\u00043d\u000438\u000435 \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u00044e, \u00043c\u000430\u00043d\u00044b \u000438 \u000434\u000440\u000443\u000433\u000438\u000435
  * TOPDOWN game - HUD is screen-space, not affected by camera
+ * \u000426\u000432\u000435\u000442\u00043e\u000432\u000430\u00044f \u00043f\u000430\u00043b\u000438\u000442\u000440\u000430: #1a1a2e, #16213e, #1f1f2e
+ * \u000417\u00043e\u00043b\u00043e\u000442\u00043e: #d4af37, #ffd700, #8b6914
+ * \u000422\u000435\u00043c\u00043d\u00044b\u000435 \u000430\u00043a\u000446\u000435\u00043d\u000442\u00044b: #2d1b00, #4a3520, #6b4c2a
+ * \u000422\u000435\u00043a\u000441\u000442: #e0d5c1, #b8a88a, #7a6b54
+ * \u00041d\u000435\u00043b\u000435\u00043c\u000435\u00043d\u000442\u00044b: \u00043e\u000433\u00043e\u00043d\u00044c #ff6b35, \u00043b\u000451\u000434 #7ec8e3, \u00044f\u000434 #7cb342, \u00043a\u000440\u00043e\u000432\u00044c #8b0000, \u000434\u000443\u000448\u000438 #9b59b6
  * @class HUD
  */
 export class HUD {
@@ -11,10 +16,10 @@ export class HUD {
     this.events = game.events;
     
     // \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u00043a\u00043e\u00043c\u00043f\u00043e\u00043d\u000435\u00043d\u000442\u00043e\u000432
-    this.healthBarWidth = 200;
-    this.healthBarHeight = 20;
+    this.healthBarWidth = 150;
+    this.healthBarHeight = 18;
     this.manaBarWidth = 150;
-    this.manaBarHeight = 15;
+    this.manaBarHeight = 14;
     
     // \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u00043c\u000435\u000441\u000442\u00043e\u00043f\u00043e\u00043b\u00043e\u000436\u000435\u00043d\u000438\u00044f
     this.setupEvents();
@@ -31,7 +36,7 @@ export class HUD {
   }
 
   /**
-   * \u00041e\u000447\u000438\u000441\u000442\u00043a\u000430 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000435\u000439
+   * \u00041e\u000447\u000438\u000441\u000442\u00043a\u000430 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u00044c
    */
   cleanup() {
     for (const unsubscribe of this.unsubscribers) {
@@ -51,21 +56,30 @@ export class HUD {
     // \u000421\u000431\u000440\u00043e\u000441 \u000442\u000440\u000430\u00043d\u000441\u000444\u00043e\u000440\u00043c\u000430\u000446\u000438\u000439
     ctx.resetTransform();
     
-    // \u00041f\u00043e\u00043b\u00043e\u000441\u000430 \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u00044f \u000441\u000432\u000435\u000440\u000445\u000443
-    this.renderHealthBar(ctx);
-    this.renderManaBar(ctx);
-    
-    // \u00041c\u000435\u000441\u000442\u00043e \u000432 \u00043f\u000440\u000430\u000432\u00043e\u000439 \u000432\u000435\u000440\u000445\u00043d\u000435\u00043c \u000443\u000433\u00043b\u000443
     const margin = 20;
     const rightAlignX = this.game.width - margin;
     
-    // TOPDOWN: Currency display in top-right corner with text format
+    // ============================================
+    // \u00041f\u000440\u000430\u000432\u00044b\u000439 \u000432\u000435\u000440\u000445\u00043d\u000438\u000439 \u000443\u000433\u00043e\u00043b - HP \u000438 MP
+    // ============================================
+    
+    // HP Bar - \u000432 \u00043f\u000440\u000430\u000432\u00043e\u000439 \u000432\u000435\u000440\u000445\u00043d\u000435\u00043c \u000432\u00044b\u000440\u000430\u000432\u00043d\u000435\u00043d\u00043e\u00043c \u00043f\u00043e \u00043f\u000440\u000430\u000432\u00043e\u00043c\u000443 \u00043a\u000440\u000430\u00044e
+    this.renderHealthBar(ctx, rightAlignX, margin);
+    
+    // MP Bar - \u00043f\u00043e\u000434 HP
+    this.renderManaBar(ctx, rightAlignX, margin + 25);
+    
+    // ============================================
+    // \u00041c\u000435\u000441\u000442\u00043e \u000432 \u00043f\u000440\u000430\u000432\u00043e\u000439 \u000432\u000435\u000440\u000445\u00043d\u000435\u00043c \u000443\u000433\u00043b\u000443
+    
+    // Currency display in top-right corner with text format
     // Format: X : GOLD
-    this.renderCurrency(ctx, rightAlignX, margin, this.player.gold, 'GOLD');
+    this.renderCurrency(ctx, rightAlignX, margin + 50, this.player.gold, 'GOLD');
     
     // Format: X : SOUL
-    this.renderCurrency(ctx, rightAlignX, margin + 30, this.player.souls, 'SOUL');
+    this.renderCurrency(ctx, rightAlignX, margin + 80, this.player.souls, 'SOUL');
     
+    // ============================================
     // \u000423\u000440\u00043e\u000432\u000435\u00043d\u00044c \u000438 \u00043e\u00043f\u00044b\u000442
     this.renderExperience(ctx);
     
@@ -85,67 +99,83 @@ export class HUD {
 
   /**
    * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043f\u000430\u00043d\u000435\u00043b\u00044c \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u00044f
+   * \u000426\u000432\u000435\u000442: \u000424\u00043e\u00043b\u00043e\u000441\u000430 #2d1b00, \u00043e\u000441\u00043d\u00043e\u000432\u00043d\u000430\u00044f #4a3520
    * @param {CanvasRenderingContext2D} ctx
+   * @param {number} rightX - \u00041f\u00043e\u000437\u000438\u000446\u000438\u00044f X (\u000432\u00044b\u000440\u000430\u000432\u00043d\u000435\u00043d\u00043e \u00043f\u00043e \u00043f\u000440\u000430\u000432\u00043e\u00043c\u000443 \u00043a\u000440\u000430\u00044e)
+   * @param {number} y - \u00041f\u00043e\u000437\u000438\u000446\u000438\u00044f Y
    * @private
    */
-  renderHealthBar(ctx) {
-    const x = 20;
-    const y = 20;
+  renderHealthBar(ctx, rightX, y) {
+    const barWidth = this.healthBarWidth;
+    const barHeight = this.healthBarHeight;
+    const x = rightX - barWidth;
     
-    // \u000424\u00043e\u00043d
-    ctx.fillStyle = '#333';
-    ctx.fillRect(x, y, this.healthBarWidth + 4, this.healthBarHeight + 4);
+    // \u000424\u00043e\u00043d \u00043f\u000430\u00043d\u000435\u00043b\u000438 \u000441\u000442\u000435\u00043d\u000430\u000432
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(x - 2, y - 2, barWidth + 4, barHeight + 4);
     
-    // \u00041e\u000441\u00043d\u00043e\u000432\u00043d\u000430\u00044f \u00043f\u000430\u00043d\u000435\u00043b\u000438
-    const healthPercent = this.player.health / this.player.maxHealth;
-    const fillWidth = this.healthBarWidth * healthPercent;
-    
-    ctx.fillStyle = healthPercent > 0.5 ? '#4caf50' : healthPercent > 0.25 ? '#ff9800' : '#f44336';
-    ctx.fillRect(x + 2, y + 2, fillWidth, this.healthBarHeight);
-    
-    // \u00041e\u000431\u000440\u000430\u00043c\u00043a\u000430
+    // \u000417\u00043e\u00043b\u00043e\u000442\u000430\u00044f \u00043e\u000440\u00043d\u000430\u00043c\u000430\u00043a\u000430
     ctx.strokeStyle = '#d4af37';
     ctx.lineWidth = 2;
-    ctx.strokeRect(x, y, this.healthBarWidth + 4, this.healthBarHeight + 4);
+    ctx.strokeRect(x - 2, y - 2, barWidth + 4, barHeight + 4);
     
-    // \u000422\u000435\u00043a\u000441\u000442
-    ctx.fillStyle = '#fff';
+    // \u00041e\u000441\u00043d\u00043e\u000432\u00043d\u000430\u00044f \u00043f\u000430\u00043b\u00043e\u000441\u000430
+    const healthPercent = this.player.health / this.player.maxHealth;
+    const fillWidth = barWidth * healthPercent;
+    
+    // \u000426\u000432\u000435\u000442\u000430 \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u00044f: \u000437\u000435\u00043b\u000451\u00043d\u00044b\u000439 >50%, \u00043e\u000440\u000430\u00043d\u000436\u000435\u000432\u00044b\u000439 >25%, \u00043a\u000440\u000430\u000441\u00043d\u00044b\u000439 <=25%
+    if (healthPercent > 0.5) {
+      ctx.fillStyle = '#4caf50';
+    } else if (healthPercent > 0.25) {
+      ctx.fillStyle = '#ff9800';
+    } else {
+      ctx.fillStyle = '#8b0000';
+    }
+    ctx.fillRect(x, y, fillWidth, barHeight);
+    
+    // \u00041e\u000431\u000440\u000430\u00043c\u00043a\u000430 - \u000437\u00043e\u00043b\u00043e\u000442\u00044b\u000435 \u00043e\u000440\u00043d\u000430\u00043c\u000435\u00043d\u000442\u00044b
+    ctx.fillStyle = '#ffd700';
     ctx.font = 'bold 12px Georgia';
-    ctx.textAlign = 'center';
-    ctx.fillText(`HP: ${Math.floor(this.player.health)}/${this.player.maxHealth}`, x + this.healthBarWidth / 2 + 2, y + this.healthBarHeight / 2 + 6);
+    ctx.textAlign = 'right';
+    ctx.fillText(`HP: ${Math.floor(this.player.health)}/${this.player.maxHealth}`, rightX - 4, y + barHeight / 2 + 5);
     ctx.textAlign = 'left';
   }
 
   /**
-   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043f\u000430\u00043d\u000435\u00043b\u00044c \u00043c\u000430\u00043d\u00044b
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u00043c\u000430\u00043d\u000443
+   * \u000426\u000432\u000435\u000442: \u000424\u00043e\u00043b\u00043e\u000441\u000430 #2d1b00, \u00043e\u000441\u00043d\u00043e\u000432\u00043d\u000430\u00044f #4a3520
    * @param {CanvasRenderingContext2D} ctx
+   * @param {number} rightX - \u00041f\u00043e\u000437\u000438\u000446\u000438\u00044f X (\u000432\u00044b\u000440\u000430\u000432\u00043d\u000435\u00043d\u00043e \u00043f\u00043e \u00043f\u000440\u000430\u000432\u00043e\u00043c\u000443 \u00043a\u000440\u000430\u00044e)
+   * @param {number} y - \u00041f\u00043e\u000437\u000438\u000446\u000438\u00044f Y
    * @private
    */
-  renderManaBar(ctx) {
-    const x = 20;
-    const y = 50;
+  renderManaBar(ctx, rightX, y) {
+    const barWidth = this.manaBarWidth;
+    const barHeight = this.manaBarHeight;
+    const x = rightX - barWidth;
     
-    // \u000424\u00043e\u00043d
-    ctx.fillStyle = '#333';
-    ctx.fillRect(x, y, this.manaBarWidth + 4, this.manaBarHeight + 4);
+    // \u000424\u00043e\u00043d \u00043f\u000430\u00043d\u000435\u00043b\u000438 \u000441\u000442\u000435\u00043d\u000430\u000432
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(x - 2, y - 2, barWidth + 4, barHeight + 4);
+    
+    // \u000417\u00043e\u00043b\u00043e\u000442\u000430\u00044f \u00043e\u000440\u00043d\u000430\u00043c\u000430\u00043a\u000430
+    ctx.strokeStyle = '#d4af37';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x - 2, y - 2, barWidth + 4, barHeight + 4);
     
     // \u00041e\u000441\u00043d\u00043e\u000432\u00043d\u000430\u00044f \u00043c\u000430\u00043d\u00044b
     const manaPercent = this.player.mana / this.player.maxMana;
-    const fillWidth = this.manaBarWidth * manaPercent;
+    const fillWidth = barWidth * manaPercent;
     
-    ctx.fillStyle = '#2196f3';
-    ctx.fillRect(x + 2, y + 2, fillWidth, this.manaBarHeight);
+    // \u000426\u000432\u000435\u000442 \u00043c\u000430\u00043d\u00044b: \u000441\u000438\u00043d\u000438\u000439 #2196f3
+    ctx.fillStyle = '#7ec8e3';
+    ctx.fillRect(x, y, fillWidth, barHeight);
     
     // \u00041e\u000431\u000440\u000430\u00043c\u00043a\u000430
-    ctx.strokeStyle = '#d4af37';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x, y, this.manaBarWidth + 4, this.manaBarHeight + 4);
-    
-    // \u000422\u000435\u00043a\u000441\u000442
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#ffd700';
     ctx.font = 'bold 10px Georgia';
-    ctx.textAlign = 'center';
-    ctx.fillText(`MP: ${Math.floor(this.player.mana)}/${this.player.maxMana}`, x + this.manaBarWidth / 2 + 2, y + this.manaBarHeight / 2 + 5);
+    ctx.textAlign = 'right';
+    ctx.fillText(`MP: ${Math.floor(this.player.mana)}/${this.player.maxMana}`, rightX - 4, y + barHeight / 2 + 4);
     ctx.textAlign = 'left';
   }
 
@@ -162,17 +192,17 @@ export class HUD {
   renderCurrency(ctx, x, y, amount, label) {
     ctx.save();
     
-    // \u000424\u00043e\u00043d
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(x - 120, y - 5, 120, 25);
+    // \u000424\u00043e\u00043d \u00043f\u000430\u00043d\u000435\u00043b\u000438
+    ctx.fillStyle = 'rgba(26, 26, 46, 0.7)';
+    ctx.fillRect(x - 100, y - 5, 100, 25);
     
     // \u000413\u000440\u000430\u00043d\u000438\u000446\u000430
     ctx.strokeStyle = '#d4af37';
     ctx.lineWidth = 1;
-    ctx.strokeRect(x - 120, y - 5, 120, 25);
+    ctx.strokeRect(x - 100, y - 5, 100, 25);
     
     // \u000422\u000435\u00043a\u000441\u000442 \u000444\u00043e\u000440\u00043c\u000430\u000442\u000430: "X : GOLD" \u000438\u00043b\u000438 "X : SOUL"
-    ctx.fillStyle = label === 'GOLD' ? '#ffd700' : '#8a2be2';
+    ctx.fillStyle = label === 'GOLD' ? '#ffd700' : '#9b59b6';
     ctx.font = 'bold 14px Georgia';
     ctx.textAlign = 'right';
     
@@ -193,7 +223,7 @@ export class HUD {
     const y = this.game.height - 40;
     
     // \u000424\u00043e\u00043d
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillStyle = 'rgba(26, 26, 46, 0.7)';
     ctx.fillRect(x, y, 200, 20);
     
     // \u00041e\u000431\u000440\u000430\u00043c\u00043a\u000430
@@ -203,11 +233,11 @@ export class HUD {
     
     // \u000417\u000430\u00043f\u00043e\u00043b\u00043d\u000435\u00043d\u000438\u000435
     const expPercent = this.player ? (this.player.xp % 100) / 100 : 0;
-    ctx.fillStyle = '#4caf50';
+    ctx.fillStyle = '#ff6b35';
     ctx.fillRect(x + 2, y + 2, 196 * expPercent, 16);
     
     // \u000422\u000435\u00043a\u000441\u000442
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#ffd700';
     ctx.font = '10px Georgia';
     ctx.textAlign = 'center';
     ctx.fillText(`EXP: ${this.player ? this.player.xp : 0}`, x + 100, y + 14);
@@ -223,7 +253,7 @@ export class HUD {
     const x = this.game.width - 100;
     const y = this.game.height - 60;
     
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillStyle = 'rgba(26, 26, 46, 0.7)';
     ctx.fillRect(x, y, 80, 20);
     
     ctx.strokeStyle = '#d4af37';
@@ -249,14 +279,14 @@ export class HUD {
     let y = this.game.height - 100;
     
     for (const effect of this.player.statusEffects) {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillStyle = 'rgba(26, 26, 46, 0.7)';
       ctx.fillRect(x, y, 150, 20);
       
       ctx.strokeStyle = '#d4af37';
       ctx.lineWidth = 1;
       ctx.strokeRect(x, y, 150, 20);
       
-      ctx.fillStyle = '#fff';
+      ctx.fillStyle = '#e0d5c1';
       ctx.font = '10px Georgia';
       ctx.textAlign = 'left';
       ctx.fillText(effect.name, x + 5, y + 14);
@@ -278,7 +308,7 @@ export class HUD {
     const x = 20;
     const y = this.game.height - 150;
     
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillStyle = 'rgba(26, 26, 46, 0.7)';
     ctx.fillRect(x, y, 250, 120);
     
     ctx.strokeStyle = '#ffd700';

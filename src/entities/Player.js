@@ -1,7 +1,10 @@
 /**
  * \u00041a\u00043b\u000430\u000441\u000441 \u000438\u000433\u000440\u00043e\u00043a\u000430
- * \u000423\u00043f\u000440\u000430\u000432\u00043b\u00044f\u000435\u000442 \u000434\u000432\u000438\u000436\u000435\u00043d\u000438\u00044f, \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u000435\u00043c \u000438 \u000440\u000435\u000441\u000443\u000440\u000441\u000430\u00043c\u000438 \u000438\u000433\u000440\u00043e\u00043a\u000430
+ * \u000423\u00043f\u000440\u000430\u000432\u00043b\u00044f\u000435\u000442 \u000434\u000432\u000438\u000436\u000435\u00043d\u000438\u00044f, \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u000438 \u000438 \u000440\u000435\u000441\u000443\u000440\u000441\u000430\u00043c\u000438
  * TOPDOWN game - movement is relative to world, not camera
+ * \u000426\u000432\u000435\u000442\u000430\u00044f \u00043f\u000430\u00043b\u000438\u000442\u000440\u000430: #1a1a2e, #16213e, #1f1f2e
+ * \u000417\u00043e\u00043b\u00043e\u000442\u000430: #d4af37, #ffd700, #8b6914
+ * \u000422\u000435\u00043b\u00043e: #2d1b00, #4a3520, #6b4c2a
  * @class Player
  */
 export class Player {
@@ -38,10 +41,13 @@ export class Player {
     this.gold = 0;
     this.souls = 0;
     this.floor = 1;
+    this.xp = 0;
     
     // \u00041c\u000430\u00043d\u000430 \u000440\u000435\u000433\u000435\u00043d\u000435\u000440\u000430\u000446\u000438\u00044f
-    this.manaRegenRate = 10; // \u00043c\u000430\u00043d\u000430 \u000432 \u000441\u000435\u00043a\u000443\u00043d\u000434\u000443
+    // +1 MP за 0.1 секунд
+    this.manaRegenRate = 10; // 10 mana per second = 1 per 0.1s
     this.manaRegenTimer = 0;
+    this.manaRegenInterval = 0.1; // 0.1 seconds
     
     // \u000421\u00043f\u000438\u000441\u00043e\u00043a \u000434\u00043b\u00044f \u00043e\u000447\u000438\u000441\u000442\u00043a\u000438 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000435\u000439
     this.unsubscribers = [];
@@ -60,7 +66,7 @@ export class Player {
   }
 
   /**
-   * \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000441\u00043e\u000431\u00044b\u000442\u000438\u000439
+   * \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u000441\u00043o\u000431\u00044b\u000442\u000438\u000439
    * @private
    */
   setupEvents() {
@@ -71,20 +77,21 @@ export class Player {
 
   /**
    * \u00041e\u000431\u00043d\u00043e\u000432\u00043b\u000435\u00043d\u000438\u000435 \u000441\u00043e\u000441\u000442\u00043e\u00044f\u00043d\u000438\u00044f \u000438\u000433\u000440\u00043e\u00043a\u000430
-   * @param {number} deltaTime - \u000412\u000440\u000435\u00043c\u00044f \u000441 \u00043f\u000440\u00043e\u000448\u00043b\u00043e\u000433\u00043e \u00043a\u000430\u000434\u000440\u000430 \u000432 \u000441\u000435\u00043a\u000443\u00043d\u000434\u000430\u000445
+   * @param {number} deltaTime - \u000412\u000440\u000435\u00043c\u00044f \u000441 \u00043f\u000440\u00043e\u000448\u00043b\u00043e\u000434\u00043e \u00043a\u000430\u000434\u000440\u000430 \u000432 \u000441\u000435\u00043a\u000443\u00043d\u000434\u000430\u000445
    */
   update(deltaTime) {
     if (!this.isAlive) return;
     
-    // \u000412\u00043e\u000441\u000442\u000430\u00043d\u00043e\u000432\u00043b\u000435\u00043d\u000438\u000435 \u00043c\u000430\u00043d\u00044b
+    // \u000412\u00043e\u000441\u000442\u000430\u000432\u00043d\u000435\u00043d\u000438\u000435 \u00043c\u000430\u00043d\u00044b
+    // +1 MP за 0.1 секунд
     this.manaRegenTimer += deltaTime;
-    if (this.manaRegenTimer >= 1 && this.mana < this.maxMana) {
-      this.mana = Math.min(this.maxMana, this.mana + this.manaRegenRate * deltaTime);
+    if (this.manaRegenTimer >= this.manaRegenInterval && this.mana < this.maxMana) {
+      this.mana = Math.min(this.maxMana, this.mana + this.manaRegenRate * this.manaRegenInterval);
       this.manaRegenTimer = 0;
       this.events.emit('player:mana', { mana: this.mana });
     }
     
-    // \u000421\u000431\u000440\u00043e\u000441 \u000441\u00043a\u00043e\u000440\u00043e\u000441\u000442\u000438
+    // \u000421\u000431\u000440\u000441 \u000441\u00043a\u00043e\u000440\u00043e\u000441\u000442\u000438
     this.vx = 0;
     this.vy = 0;
     
@@ -102,24 +109,24 @@ export class Player {
       }
     }
     
-    // \u00041d\u00043e\u000440\u00043c\u000430\u00043b\u000438\u000437\u000430\u000446\u000438\u00044f \u000434\u000432\u000438\u000436\u000435\u00043d\u000438\u00044f \u000434\u000432\u000430\u000434\u00044c\u00044e
+    // \u00041d\u00043e\u000440\u00043c\u000430\u00043b\u000438\u000437\u000430\u000446\u000438\u00044f \u000434\u000432\u000438\u000436\u000435\u00043d\u000438\u00044f
     if (this.vx !== 0 && this.vy !== 0) {
       this.vx *= Math.SQRT1_2;
       this.vy *= Math.SQRT1_2;
     }
     
-    // \u00041e\u000431\u00043d\u00043e\u000432\u00043b\u000435\u00043d\u000438\u000435 \u00043f\u00043e\u000437\u000438\u000446\u000438\u000438
+    // \u00041e\u000431\u00043d\u00043e\u000432\u00043b\u000435\u00043d\u000438\u000435 \u00043f\u00043e\u000437\u000438\u000446\u000438\u00044b
     this.x += this.vx * deltaTime;
     this.y += this.vy * deltaTime;
     
     // \u00041e\u000433\u000440\u000430\u00043d\u000438\u000447\u000435\u00043d\u000438\u000435 \u00043f\u00043e \u00044d\u00043a\u000440\u000430\u00043d\u000443
-    this.x = Math.max(0, Math.min(this.game.width - this.width, this.x));
-    this.y = Math.max(0, Math.min(this.game.height - this.height, this.y));
+    this.x = Math.max(0, Math.min(this.game.worldWidth - this.width, this.x));
+    this.y = Math.max(0, Math.min(this.game.worldHeight - this.height, this.y));
     
     // \u00041f\u000440\u00043e\u000432\u000435\u000440\u00043a\u000430 \u000434\u000432\u000438\u000436\u000435\u00043d\u000438\u00044f
     this.isMoving = this.vx !== 0 || this.vy !== 0;
     
-    // \u000422\u000430\u000439\u00043c\u000435\u000440 \u00043d\u000435\u000443\u00044f\u000437\u000432\u000438\u00043c\u00043e\u000441\u000442\u00044c\u00044e
+    // \u000422\u000430\u000439\u00043c\u000435\u000440 \u00043d\u000435\u000443\u000444\u000430\u000432\u00043b\u00044e\u000441\u000442\u00044c\u00044e
     if (this.invulnerable) {
       this.invulnerableTimer -= deltaTime;
       if (this.invulnerableTimer <= 0) {
@@ -129,13 +136,14 @@ export class Player {
   }
 
   /**
-   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u00043a\u000430 \u000438\u000433\u000440\u00043e\u00043a\u000430
+   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000438\u000433\u000440\u00043e\u00043a\u000430
+   * \u000426\u000432\u000435\u000442\u000430\u00044f \u00043f\u000430\u00043b\u000438\u000442\u00043e\u00043a\u000430: #2d1b00, #4a3520
    * @param {CanvasRenderingContext2D} ctx - \u00041a\u00043e\u00043d\u000442\u000435\u00043a\u000441\u000442 canvas
    */
   render(ctx) {
     if (!this.isAlive) return;
     
-    // \u00041c\u000438\u000433\u000430\u00043d\u000438\u000435 \u00043f\u000440\u000438 \u00043d\u000435\u000443\u00044f\u000437\u000432\u000438\u00043c\u00043e\u000441\u000442\u000438
+    // \u00041c\u000438\u000433\u000430\u00043d\u000438\u000435 \u00043f\u000440\u000438 \u00043d\u000435\u000443\u000444\u000430\u000432\u00043b\u000435\u00043d\u000438\u00044f
     if (this.invulnerable && Math.floor(this.invulnerableTimer * 10) % 2 === 0) {
       return;
     }
@@ -150,7 +158,7 @@ export class Player {
     const gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.height);
     gradient.addColorStop(0, '#4a3520');
     gradient.addColorStop(0.5, '#6b4c2a');
-    gradient.addColorStop(1, '#3d2b1a');
+    gradient.addColorStop(1, '#2d1b00');
     
     ctx.fillStyle = gradient;
     ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -190,6 +198,7 @@ export class Player {
     this.invulnerableTimer = 1;
     
     this.events.emit('player:damaged', { damage, health: this.health });
+    this.events.emit('effect:damage', { x: this.x + this.width/2, y: this.y + this.height/2 });
     
     if (this.health <= 0) {
       this.health = 0;
@@ -210,11 +219,12 @@ export class Player {
     
     if (healedAmount > 0) {
       this.events.emit('player:healed', { amount: healedAmount, health: this.health });
+      this.events.emit('effect:heal', { x: this.x + this.width/2, y: this.y + this.height/2 });
     }
   }
 
   /**
-   * \u000412\u00043e\u000441\u000442\u000430\u00043d\u00043e\u000432\u00043b\u000435\u00043d\u000438\u000435 \u00043c\u000430\u00043d\u00044b
+   * \u000412\u00043e\u000432\u000441\u000442\u000430\u000432\u00043b\u000435\u00043d\u000438\u000435 \u00043c\u000430\u00043d\u00044b
    * @param {number} amount - \u00041a\u00043e\u00043b\u000438\u000447\u000435\u000441\u000442\u000432\u00043e \u00043c\u000430\u00043d\u00044b
    */
   restoreMana(amount) {
@@ -231,6 +241,7 @@ export class Player {
   addGold(amount) {
     this.gold += amount;
     this.events.emit('player:gold', { amount, gold: this.gold });
+    this.events.emit('effect:gold', { x: this.x + this.width/2, y: this.y + this.height/2, amount });
   }
 
   /**
@@ -240,6 +251,7 @@ export class Player {
   addSouls(amount) {
     this.souls += amount;
     this.events.emit('player:souls', { amount, souls: this.souls });
+    this.events.emit('effect:soul', { x: this.x + this.width/2, y: this.y + this.height/2, amount });
   }
 
   /**
