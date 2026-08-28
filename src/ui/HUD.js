@@ -46,31 +46,31 @@ export class HUD {
   }
 
   /**
-   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c HUD
+   * Отрисовка HUD
    * TOPDOWN: HUD is always rendered in screen space
    * @param {CanvasRenderingContext2D} ctx
    */
   render(ctx) {
     ctx.save();
     
-    // \u000421\u000431\u000440\u00043e\u000441 \u000442\u000440\u000430\u00043d\u000441\u000444\u00043e\u000440\u00043c\u000430\u000446\u000438\u000439
+    // Сброс трансформаций
     ctx.resetTransform();
     
     const margin = 20;
     const rightAlignX = this.game.width - margin;
     
     // ============================================
-    // \u00041f\u000440\u000430\u000432\u00044b\u000439 \u000432\u000435\u000440\u000445\u00043d\u000438\u000439 \u000443\u000433\u00043e\u00043b - HP \u000438 MP
+    // Правый верхний угол - HP и MP
     // ============================================
     
-    // HP Bar - \u000432 \u00043f\u000440\u000430\u000432\u00043e\u000439 \u000432\u000435\u000440\u000445\u00043d\u000435\u00043c \u000432\u00044b\u000440\u000430\u000432\u00043d\u000435\u00043d\u00043e\u00043c \u00043f\u00043e \u00043f\u000440\u000430\u000432\u00043e\u00043c\u000443 \u00043a\u000440\u000430\u00044e
+    // HP Bar - в правом верхнем выравнено по правому краю
     this.renderHealthBar(ctx, rightAlignX, margin);
     
-    // MP Bar - \u00043f\u00043e\u000434 HP
+    // MP Bar - под HP
     this.renderManaBar(ctx, rightAlignX, margin + 25);
     
     // ============================================
-    // \u00041c\u000435\u000441\u000442\u00043e \u000432 \u00043f\u000440\u000430\u000432\u00043e\u000439 \u000432\u000435\u000440\u000445\u00043d\u000435\u00043c \u000443\u000433\u00043b\u000443
+    // Место в правом верхнем углу
     
     // Currency display in top-right corner with text format
     // Format: X : GOLD
@@ -80,14 +80,40 @@ export class HUD {
     this.renderCurrency(ctx, rightAlignX, margin + 80, this.player.souls, 'SOUL');
     
     // ============================================
-    // \u000423\u000440\u00043e\u000432\u000435\u00043d\u00044c \u000438 \u00043e\u00043f\u00044b\u000442
+    // Уровень и опыт
     this.renderExperience(ctx);
     
-    // \u00041d\u00043e\u00043c\u000435\u000440 \u000443\u000440\u00043e\u000432\u00043d\u00044f
+    // Номер уровня
     this.renderLevel(ctx);
     
-    // Отображение статусов
-    this.renderStatusEffects(ctx);
+    // FPS counter - yellow text in black box, bottom-left corner [FPS - XXX]
+    this.renderFPSCounter(ctx);
+  }
+
+  /**
+   * FPS counter - желтый текст в черном боксе [FPS - XXX]
+   * @param {CanvasRenderingContext2D} ctx
+   * @private
+   */
+  renderFPSCounter(ctx) {
+    const now = performance.now();
+    const fps = this.lastFrameTime > 0 ? Math.round(1000 / (now - this.lastFrameTime)) : 60;
+    this.lastFrameTime = now;
+    
+    const x = 20;
+    const y = this.game.height - 30;
+    const text = `FPS - ${fps}`;
+    
+    // Черный фон
+    ctx.fillStyle = '#000000';
+    const textWidth = ctx.measureText(text).width + 16;
+    ctx.fillRect(x, y, textWidth, 24);
+    
+    // Желтый текст
+    ctx.fillStyle = '#ffff00';
+    ctx.font = 'bold 14px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(text, x + 8, y + 17);
   }
 
   /**
