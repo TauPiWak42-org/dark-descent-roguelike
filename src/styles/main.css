@@ -486,3 +486,12 @@ body::before {
   --blood: #8b0000;
   --soul: #9b59b6;
 }
+
+/* Скрытие экрана загрузки */
+#loading-screen.hidden {
+  display: none !important;
+}
+
+#game-container.loaded {
+  opacity: 1;
+}
