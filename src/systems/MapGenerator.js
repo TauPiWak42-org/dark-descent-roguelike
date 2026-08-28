@@ -242,22 +242,12 @@ export class MapGenerator {
    * @private
    */
   renderWall(ctx, x, y) {
-    // Тёмно-серый пол с немного отличающимся тоном
-    ctx.fillStyle = '#3a3a3a';
+    // Тёмно-синий пол
+    ctx.fillStyle = '#1a2a3a';
     ctx.fillRect(x, y, this.tileSize, this.tileSize);
     
-    // Немного отличающийся тон для текстуры
-    ctx.fillStyle = '#424242';
-    ctx.fillRect(x + 2, y + 2, this.tileSize - 4, this.tileSize - 4);
-    
-    // Лёгкий шум для атмосферы
-    if (Math.random() < 0.05) {
-      ctx.fillStyle = '#4a4a4a';
-      ctx.fillRect(x + Math.random() * 20, y + Math.random() * 20, 4, 4);
-    }
-    
     // Границы плитки
-    ctx.strokeStyle = '#333333';
+    ctx.strokeStyle = '#0f1a25';
     ctx.lineWidth = 1;
     ctx.strokeRect(x, y, this.tileSize, this.tileSize);
   }

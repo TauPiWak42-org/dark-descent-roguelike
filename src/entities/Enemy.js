@@ -175,10 +175,42 @@ export class Enemy {
     }
     
     // \u00041f\u000440\u000438\u00043c\u000435\u00043d\u000438\u000435 \u000434\u000432\u000438\u000436\u000435\u00043d\u000438\u00044f
-    this.x += this.vx * deltaTime;
-    this.y += this.vy * deltaTime;
+    const newX = this.x + this.vx * deltaTime;
+    const newY = this.y + this.vy * deltaTime;
     
-    // \u00041e\u000433\u000440\u000430\u00043d\u000438\u000447\u000435\u00043d\u000438\u000435 \u00043f\u00043e \u000433\u000440\u000430\u00043d\u000438\u000446\u000430\u00043c
+    if (this.game.mapGenerator && this.game.mapGenerator.map) {
+      const map = this.game.mapGenerator.map;
+      const tileSize = this.game.mapGenerator.tileSize;
+      const left = Math.floor(newX / tileSize);
+      const right = Math.floor((newX + this.width) / tileSize);
+      const top = Math.floor(newY / tileSize);
+      const bottom = Math.floor((newY + this.height) / tileSize);
+      
+      if (this.vx !== 0) {
+        const checkX = this.vx > 0 ? right : left;
+        const checkY1 = Math.floor(this.y / tileSize);
+        const checkY2 = Math.floor((this.y + this.height - 1) / tileSize);
+        if (map[checkY1] && map[checkY1][checkX] === 1 || map[checkY2] && map[checkY2][checkX] === 1) {
+          this.vx = 0;
+        } else {
+          this.x = newX;
+        }
+      }
+      if (this.vy !== 0) {
+        const checkY = this.vy > 0 ? bottom : top;
+        const checkX1 = Math.floor(this.x / tileSize);
+        const checkX2 = Math.floor((this.x + this.width - 1) / tileSize);
+        if (map[checkY] && (map[checkY][checkX1] === 1 || map[checkY][checkX2] === 1)) {
+          this.vy = 0;
+        } else {
+          this.y = newY;
+        }
+      }
+    } else {
+      this.x = newX;
+      this.y = newY;
+    }
+    
     this.x = Math.max(0, Math.min(this.game.worldWidth - this.width, this.x));
     this.y = Math.max(0, Math.min(this.game.worldHeight - this.height, this.y));
   }
