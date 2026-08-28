@@ -322,91 +322,27 @@ export class Enemy {
     // \u000413\u00043b\u000430\u000437\u000430 \u000432\u000442\u000430\u000432\u00043a\u000438\u00043e\u000432\u000442\u000440\u000438\u000433\u000430\u000432
     this.renderTypeSpecific(ctx);
     
-    // \u00041f\u00043e\u00043a\u000430\u000437\u000430\u000442\u000435\u00043b\u00044c \u000437\u000434\u00043e\u000440\u00043e\u000432\u00044c\u00044f
+    // Показатель здоровья под ногами врага (горизонтальный бар)
     if (this.isAggressive) {
-      ctx.strokeStyle = '#ff4757';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(this.x + this.width / 2, this.y - 5, this.width / 2 + 5, 0, Math.PI);
-      ctx.stroke();
+      const healthPercent = this.health / this.maxHealth;
+      const barWidth = this.width;
+      const barHeight = 4;
+      const barX = this.x;
+      const barY = this.y + this.height + 3;
+      
+      // Фон HP бара
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(barX, barY, barWidth, barHeight);
+      
+      // Заполнение HP бара (красный)
+      ctx.fillStyle = '#ff4757';
+      ctx.fillRect(barX, barY, barWidth * healthPercent, barHeight);
+      
+      // Окантовка
+      ctx.strokeStyle = '#8b0000';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(barX, barY, barWidth, barHeight);
     }
     
     ctx.restore();
   }
-
-  /**
-   * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000442\u000438\u00043f\u000443 \u000432 \u000437\u000430\u000432\u000438\u000441\u000438\u00043e\u000441\u000442\u000438 \u00043e\u000442 \u000442\u000438\u00043f\u000430
-   * @param {CanvasRenderingContext2D} ctx
-   * @private
-   */
-  renderTypeSpecific(ctx) {
-    // \u000421\u000432\u000435\u000446\u00043d\u00044b\u000435 \u000441\u00043a\u000435\u00043b\u000435\u000442\u000430
-    if (this.type === 'skeleton') {
-      // \u000413\u00043b\u000430\u000437\u000430
-      ctx.fillStyle = '#1a1a2e';
-      ctx.fillRect(this.x + 8, this.y + 6, 4, 4);
-      ctx.fillRect(this.x + 20, this.y + 6, 4, 4);
-      
-      // \u000420\u00043e\u000442
-      ctx.fillStyle = '#e0d5c1';
-      ctx.fillRect(this.x + 12, this.y + 12, 4, 8);
-    } else if (this.type === 'zombie') {
-      // \u000417\u00043e\u00043b\u00043e\u000442\u000430\u00044b \u000442\u000435\u00043b\u00043e
-      ctx.fillStyle = this.darkenColor(this.color, 10);
-      ctx.fillRect(this.x + 5, this.y + 5, this.width - 10, this.height - 10);
-    } else if (this.type === 'demon') {
-      // \u000420\u00043e\u00043d\u00044c\u00043a\u000438\u000435 \u000443\u000430\u000440\u00043d\u000430\u000442
-      ctx.fillStyle = '#8b0000';
-      ctx.beginPath();
-      ctx.moveTo(this.x + this.width / 2, this.y - 5);
-      ctx.lineTo(this.x + 5, this.y + this.height / 2);
-      ctx.lineTo(this.x + this.width - 5, this.y + this.height / 2);
-      ctx.closePath();
-      ctx.fill();
-    } else if (this.type === 'ghost') {
-      // \u00041f\u000440\u00043e\u000437\u000440\u000430\u000447\u00043d\u00043e\u000441\u000442\u00044c
-      ctx.globalAlpha = 0.7;
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    } else if (this.type === 'spider') {
-      // \u00041f\u000430\u000443\u00043a\u000438\u00043d\u000430\u000432\u00043e\u000433\u000438\u000435 \u00043d\u00043e\u000436\u00043a\u000438
-      ctx.fillStyle = this.darkenColor(this.color, 30);
-      ctx.beginPath();
-      ctx.ellipse(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.height / 3, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // \u00041d\u00043e\u000436\u00043a\u000438
-      for (let i = 0; i < 4; i++) {
-        const angle = (i / 4) * Math.PI * 2;
-        const legX = this.x + this.width / 2 + Math.cos(angle) * this.width / 2;
-        const legY = this.y + this.height / 2 + Math.sin(angle) * this.height / 2;
-        ctx.fillRect(legX - 2, legY - 2, 4, 8);
-      }
-    }
-  }
-
-  /**
-   * \u00041e\u000442\u000435\u00043d\u000438\u000442\u00044c \u000446\u000432\u000435\u000442
-   * @param {string} color
-   * @param {number} percent
-   * @returns {string}
-   * @private
-   */
-  darkenColor(color, percent) {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) - amt;
-    const G = (num >> 8 & 0x00FF) - amt;
-    const B = (num & 0x0000FF) - amt;
-    
-    return `#${(
-      0x1000000 +
-      (R < 0 ? 0 : R) * 0x10000 +
-      (G < 0 ? 0 : G) * 0x100 +
-      (B < 0 ? 0 : B)
-    ).toString(16).slice(1)}`;
-  }
-}
