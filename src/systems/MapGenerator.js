@@ -141,27 +141,60 @@ export class MapGenerator {
   }
 
   render(ctx, camera) {
-    const startTileX = Math.floor(camera.x / this.tileSize);
-    const startTileY = Math.floor(camera.y / this.tileSize);
-    const endTileX = Math.ceil((camera.x + camera.game.width) / this.tileSize);
-    const endTileY = Math.ceil((camera.y + camera.game.height) / this.tileSize);
+    const tileSize = this.tileSize;
+    const startTileX = Math.floor(camera.x / tileSize);
+    const startTileY = Math.floor(camera.y / tileSize);
+    const endTileX = Math.ceil((camera.x + camera.game.width) / tileSize) + 1;
+    const endTileY = Math.ceil((camera.y + camera.game.height) / tileSize) + 1;
     
     for (let y = startTileY; y <= endTileY && y < this.height; y++) {
+      if (y < 0) continue;
       for (let x = startTileX; x <= endTileX && x < this.width; x++) {
-        if (this.map[y] && this.map[y][x] === 1) {
-          this.renderWall(ctx, x * this.tileSize, y * this.tileSize);
-        } else if (this.map[y] && this.map[y][x] === 3) {
-          this.renderGoldVein(ctx, x * this.tileSize, y * this.tileSize);
+        if (x < 0) continue;
+        const tile = this.map[y][x];
+        const screenX = x * tileSize - camera.x;
+        const screenY = y * tileSize - camera.y;
+        
+        if (tile === 1) {
+          // Стена - синий кирпич
+          this.renderWall(ctx, screenX, screenY);
+        } else if (tile === 0) {
+          // Пол - серая плитка с вариациями
+          this.renderFloor(ctx, screenX, screenY, x, y);
+        } else if (tile === 3) {
+          // Золотая жила
+          this.renderGoldVein(ctx, screenX, screenY);
         }
       }
     }
   }
 
-  renderWall(ctx, x, y) {
-    // Тёмно-синий блок для стены
-    ctx.fillStyle = '#1a2a3a';
+  renderFloor(ctx, x, y, tileX, tileY) {
+    // Вариации серого для пола
+    const variation = ((tileX * 7 + tileY * 13) % 4) / 100;
+    const baseGray = 50 + Math.floor(variation * 20);
+    ctx.fillStyle = `rgb(${baseGray}, ${baseGray}, ${baseGray + 5})`;
     ctx.fillRect(x, y, this.tileSize, this.tileSize);
-    ctx.strokeStyle = '#0f1a25';
+    
+    // Тонкая обводка для эффекта плитки
+    ctx.strokeStyle = `rgb(${baseGray - 10}, ${baseGray - 10}, ${baseGray - 5})`;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, this.tileSize, this.tileSize);
+  }
+
+  renderWall(ctx, x, y) {
+    // Тёмно-синий кирпич для стены
+    ctx.fillStyle = '#1a3a5c';
+    ctx.fillRect(x, y, this.tileSize, this.tileSize);
+    
+    // Эффект кирпичей
+    ctx.fillStyle = '#0f2a40';
+    ctx.fillRect(x, y + this.tileSize/2 - 1, this.tileSize, 2);
+    ctx.fillRect(x + this.tileSize/2 - 1, y, 2, this.tileSize/2 - 1);
+    ctx.fillRect(x + this.tileSize/2, y + this.tileSize/2 + 1, 2, this.tileSize/2 - 1);
+    
+    // Обводка
+    ctx.strokeStyle = '#0a1a2a';
     ctx.lineWidth = 1;
     ctx.strokeRect(x, y, this.tileSize, this.tileSize);
   }

@@ -29,6 +29,7 @@ const hud = new HUD(game, player);
 const enemyManager = new EnemyManager(game, player);
 const combatSystem = new CombatSystem(game, player, enemyManager);
 const particleSystem = new ParticleSystem(game);
+game.combatSystem = combatSystem;
 const settingsUI = new SettingsUI(game, settingsManager);
 const renderOptimizer = new RenderOptimizer(game);
 const itemManager = new ItemManager(game, player);
@@ -54,6 +55,7 @@ if (settings.debugMode) {
 
 // \u000421\u00043e\u000445\u000440\u000430\u00043d\u00044f\u000442\u00044c \u000441\u000441\u00044b\u00043b\u00043a\u000443 \u00043d\u000430 \u000438\u000433\u000440\u00043e\u00043a\u000442
 game.player = player;
+game.camera = camera;
 game.input = inputManager;
 game.settings = settingsManager;
 game.renderOptimizer = renderOptimizer;

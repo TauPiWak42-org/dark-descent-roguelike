@@ -165,7 +165,18 @@ export class Player {
     const centerX = this.x + this.width / 2;
     const centerY = this.y + this.height / 2;
     const arrowLength = 25;
-    const arrowAngle = this.facing === 'right' ? 0 : Math.PI;
+    
+    // Определяем направление по углу мыши относительно центра экрана
+    let arrowAngle = 0;
+    if (this.game.combatSystem) {
+      const mouseX = this.game.combatSystem.mouseX;
+      const mouseY = this.game.combatSystem.mouseY;
+      const screenCenterX = this.game.width / 2;
+      const screenCenterY = this.game.height / 2;
+      arrowAngle = Math.atan2(mouseY - screenCenterY, mouseX - screenCenterX);
+    } else {
+      arrowAngle = this.facing === 'right' ? 0 : Math.PI;
+    }
     
     ctx.save();
     ctx.translate(centerX, centerY);
@@ -173,13 +184,16 @@ export class Player {
     
     ctx.strokeStyle = '#ffd700';
     ctx.lineWidth = 2;
+    ctx.shadowColor = '#ffd700';
+    ctx.shadowBlur = 8;
     ctx.beginPath();
     ctx.moveTo(5, 0);
     ctx.lineTo(arrowLength, 0);
-    ctx.lineTo(arrowLength - 5, -4);
+    ctx.lineTo(arrowLength - 6, -5);
     ctx.moveTo(arrowLength, 0);
-    ctx.lineTo(arrowLength - 5, 4);
+    ctx.lineTo(arrowLength - 6, 5);
     ctx.stroke();
+    ctx.shadowBlur = 0;
     
     ctx.restore();
   }
