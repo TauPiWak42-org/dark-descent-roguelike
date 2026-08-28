@@ -57,8 +57,10 @@ export class CombatSystem {
       }
     };
     
-    // CombatSystem не устанавливает обработчики мыши - это делает InputManager
-    // Избегаем дублирования обработчиков
+    // Устанавливаем обработчики мыши для CombatSystem
+    this.canvas.addEventListener('mousemove', this.handleMouseMove);
+    this.canvas.addEventListener('mousedown', this.handleMouseDown);
+    this.canvas.addEventListener('mouseup', this.handleMouseUp);
   }
 
   /**
