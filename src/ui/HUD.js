@@ -87,14 +87,10 @@ export class HUD {
     this.renderLevel(ctx);
     
     // \u00041e\u000442\u00043e\u000431\u000440\u000430\u000436\u000435\u00043d\u000438\u000435 \u000441\u000442\u000430\u000442\u000443\u000441\u000430
-    this.renderStatusEffects(ctx);
-    
-    // \u000414\u000435\u000431\u000430\u000433 \u000440\u000435\u000436\u000438\u00043c\u000430
-    if (this.game.debugMode) {
-      this.renderDebugInfo(ctx);
-    }
-    
-    ctx.restore();
+  renderStatusEffects(ctx) {
+    // statusEffects не существует в Player, метод будет реализован позже
+    // Пока просто пропускаем отрисовку статусов
+    return;
   }
 
   /**
@@ -273,32 +269,9 @@ export class HUD {
    * @private
    */
   renderStatusEffects(ctx) {
-    // statusEffects не существует в Player, проверяем наличие метода
-    if (!this.player.getStatusEffects || !this.player.getStatusEffects()) return;
-    
-    const x = 20;
-    let y = this.game.height - 100;
-    
-    const effects = this.player.getStatusEffects();
-    for (const effect of effects) {
-      ctx.fillStyle = 'rgba(26, 26, 46, 0.7)';
-      ctx.fillRect(x, y, 150, 20);
-      
-      ctx.strokeStyle = '#d4af37';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x, y, 150, 20);
-      
-      ctx.fillStyle = '#e0d5c1';
-      ctx.font = '10px Georgia';
-      ctx.textAlign = 'left';
-      ctx.fillText(effect.name, x + 5, y + 14);
-      
-      ctx.textAlign = 'right';
-      ctx.fillText(`${Math.floor(effect.duration)}s`, x + 145, y + 14);
-      ctx.textAlign = 'left';
-      
-      y += 25;
-    }
+    // statusEffects не существует в Player, метод будет реализован позже
+    // Пока просто пропускаем отрисовку статусов
+    return;
   }
 
   /**
