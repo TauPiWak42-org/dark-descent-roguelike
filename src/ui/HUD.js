@@ -21,6 +21,10 @@ export class HUD {
     this.manaBarWidth = 150;
     this.manaBarHeight = 14;
     
+    // FPS counter state
+    this.lastFrameTime = 0;
+    this.fps = 60;
+    
     // \u00041d\u000430\u000441\u000442\u000440\u00043e\u000439\u00043a\u000430 \u00043c\u000435\u000441\u000442\u00043e\u00043f\u00043e\u00043b\u00043e\u000436\u000435\u00043d\u000438\u00044f
     this.setupEvents();
   }
@@ -97,23 +101,27 @@ export class HUD {
    */
   renderFPSCounter(ctx) {
     const now = performance.now();
-    const fps = this.lastFrameTime > 0 ? Math.round(1000 / (now - this.lastFrameTime)) : 60;
+    if (this.lastFrameTime > 0) {
+      this.fps = Math.round(1000 / (now - this.lastFrameTime));
+    }
     this.lastFrameTime = now;
     
     const x = 20;
     const y = this.game.height - 30;
-    const text = `FPS - ${fps}`;
+    const text = `FPS - ${this.fps}`;
     
     // Черный фон
     ctx.fillStyle = '#000000';
+    ctx.save();
+    ctx.font = 'bold 14px monospace';
     const textWidth = ctx.measureText(text).width + 16;
     ctx.fillRect(x, y, textWidth, 24);
     
     // Желтый текст
     ctx.fillStyle = '#ffff00';
-    ctx.font = 'bold 14px monospace';
     ctx.textAlign = 'left';
     ctx.fillText(text, x + 8, y + 17);
+    ctx.restore();
   }
 
   /**
