@@ -242,24 +242,26 @@ export class MapGenerator {
    * @private
    */
   renderWall(ctx, x, y) {
-    // \u00041e\u000441\u00043d\u00043e\u000432\u00043d\u000430\u00044f \u000446\u000432\u000435\u000442 \u000441\u000442\u000435\u00043d\u00044b
-    ctx.fillStyle = '#2d1b00';
+    // Тёмно-серый пол с немного отличающимся тоном
+    ctx.fillStyle = '#3a3a3a';
     ctx.fillRect(x, y, this.tileSize, this.tileSize);
     
-    // \u000422\u000435\u00043a\u000441\u000442\u000443\u000440\u000430
-    ctx.fillStyle = '#4a3520';
+    // Немного отличающийся тон для текстуры
+    ctx.fillStyle = '#424242';
     ctx.fillRect(x + 2, y + 2, this.tileSize - 4, this.tileSize - 4);
     
-    // \u000417\u00043e\u00043b\u00043e\u000442\u00044b\u000435 \u000437\u00043e\u00043b\u00043e\u000442\u00044b\u000435 \u00043f\u000440\u00043e\u000436\u000438\u00043b\u00043a\u000438 (\u000448\u000443\u00043c)
+    // Лёгкий шум для атмосферы
     if (Math.random() < 0.05) {
-      ctx.fillStyle = '#8b6914';
+      ctx.fillStyle = '#4a4a4a';
       ctx.fillRect(x + Math.random() * 20, y + Math.random() * 20, 4, 4);
     }
     
-    // \u000410\u000442\u00043c\u00043e\u000441\u000444\u000435\u000440\u00043d\u00044b\u000435 \u000448\u000443\u00043c: \u00043b\u000435\u000433\u00043a\u000438\u000439 \u000448\u000443\u00043c \u000432 \u000441\u000442\u000435\u00043d\u000430\u000445
-    ctx.fillStyle = 'rgba(212, 175, 55, 0.1)';
-    ctx.fillRect(x + 5, y + 5, this.tileSize - 10, this.tileSize - 10);
+    // Границы плитки
+    ctx.strokeStyle = '#333333';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, this.tileSize, this.tileSize);
   }
+
 
   /**
    * \u00041e\u000442\u000440\u000438\u000441\u00043e\u000432\u000430\u000442\u00044c \u000437\u00043e\u00043b\u00043e\u000442\u00044b\u000443 \u00043f\u000440\u00043e\u000436\u000438\u00043b\u00043a\u000438
