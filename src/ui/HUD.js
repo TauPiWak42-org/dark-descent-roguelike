@@ -86,7 +86,15 @@ export class HUD {
     // \u00041d\u00043e\u00043c\u000435\u000440 \u000443\u000440\u00043e\u000432\u00043d\u00044f
     this.renderLevel(ctx);
     
-    // \u00041e\u000442\u00043e\u000431\u000440\u000430\u000436\u000435\u00043d\u000438\u000435 \u000441\u000442\u000430\u000442\u000443\u000441\u000430
+    // Отображение статусов
+    this.renderStatusEffects(ctx);
+  }
+
+  /**
+   * Отрисовка статусных эффектов
+   * @param {CanvasRenderingContext2D} ctx
+   * @private
+   */
   renderStatusEffects(ctx) {
     // statusEffects не существует в Player, метод будет реализован позже
     // Пока просто пропускаем отрисовку статусов
