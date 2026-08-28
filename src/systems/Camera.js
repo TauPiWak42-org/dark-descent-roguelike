@@ -51,8 +51,8 @@ export class Camera {
     this.y = Math.max(0, this.y);
     
     // \u00041f\u000440\u000435\u000434\u00043e\u000442\u000432\u000440\u000430\u000448\u000442\u00044c \u000437\u000430 \u000433\u000440\u000430\u00043d\u000438\u000446\u00043b \u00043c\u000438\u000440\u000430
-    const maxX = Math.max(0, this.game.width * 2 - this.game.width);
-    const maxY = Math.max(0, this.game.height * 2 - this.game.height);
+    const maxX = Math.max(0, this.game.worldWidth - this.game.width);
+    const maxY = Math.max(0, this.game.worldHeight - this.game.height);
     this.x = Math.min(maxX, this.x);
     this.y = Math.min(maxY, this.y);
   }
