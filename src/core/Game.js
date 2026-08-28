@@ -258,6 +258,10 @@ export class Game {
     this.state = 'stopped';
     this.gameLoop.stop();
     window.removeEventListener('keydown', this.handleKeyDown);
+    // Очистка InputManager для предотвращения утечки событий
+    if (this.input && this.input.cleanup) {
+      this.input.cleanup();
+    }
     this.events.emit('game:stop');
     console.log('Game stopped');
   }

@@ -83,8 +83,7 @@ export class EnemyManager {
   onEnemyDied(data) {
     const { enemy } = data;
     
-    // Награда уже выдана в Enemy.die(), здесь только удаление из списка
-    // Удаление из списка
+    // Удаление из списка (награда уже выдана в Enemy.die())
     const index = this.enemies.indexOf(enemy);
     if (index > -1) {
       this.enemies.splice(index, 1);

@@ -44,7 +44,7 @@ export class Player {
     this.xp = 0;
     
     // \u00041c\u000430\u00043d\u000430 \u000440\u000435\u000433\u000435\u00043d\u000435\u000440\u000430\u000446\u000438\u00044f
-    // +1 MP за 0.1 секунд
+    // Восстановление маны (+1 MP каждые 0.1 сек)
     this.manaRegenRate = 10; // 10 mana per second = 1 per 0.1s
     this.manaRegenTimer = 0;
     this.manaRegenInterval = 0.1; // 0.1 seconds
@@ -83,10 +83,11 @@ export class Player {
     if (!this.isAlive) return;
     
     // \u000412\u00043e\u000441\u000442\u000430\u000432\u00043d\u000435\u00043d\u000438\u000435 \u00043c\u000430\u00043d\u00044b
-    // +1 MP за 0.1 секунд
+    // Восстановление маны (+1 MP каждые 0.1 сек)
     this.manaRegenTimer += deltaTime;
     if (this.manaRegenTimer >= this.manaRegenInterval && this.mana < this.maxMana) {
-      this.mana = Math.min(this.maxMana, this.mana + this.manaRegenRate * this.manaRegenInterval);
+      const regenAmount = this.manaRegenRate * this.manaRegenInterval;
+      this.mana = Math.min(this.maxMana, this.mana + regenAmount);
       this.manaRegenTimer = 0;
       this.events.emit('player:mana', { mana: this.mana });
     }

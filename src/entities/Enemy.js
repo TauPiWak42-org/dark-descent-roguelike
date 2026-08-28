@@ -53,7 +53,7 @@ export class Enemy {
    * \u00041e\u000447\u000438\u000441\u000442\u00043a\u000430 \u000441\u00043b\u000443\u000448\u000430\u000442\u000435\u00043b\u000435\u000439
    */
   cleanup() {
-    for (const unsubscribe of this.unsubscribers || []) {
+    for (const unsubscribe of this.unsubscribers) {
       unsubscribe();
     }
     this.unsubscribers = [];

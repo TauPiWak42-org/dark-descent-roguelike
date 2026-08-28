@@ -69,12 +69,16 @@ export class EventSystem {
    * @param {Function} callback - Функция обратного вызова
    */
   once(event, callback) {
-    const unsubscribe = this.on(event, (data) => {
-      unsubscribe();
+    let called = false;
+    const wrapper = (data) => {
+      if (called) return;
+      called = true;
+      this.off(event, wrapper);
       callback(data);
-    });
+    };
     
-    return unsubscribe;
+    this.on(event, wrapper);
+    return () => this.off(event, wrapper);
   }
 
   /**
