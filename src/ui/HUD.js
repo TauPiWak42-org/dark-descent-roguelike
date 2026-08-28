@@ -86,11 +86,53 @@ export class HUD {
     // \u00041d\u00043e\u00043c\u000435\u000440 \u000443\u000440\u00043e\u000432\u00043d\u00044f
     this.renderLevel(ctx);
     
-    // \u00041e\u000442\u00043e\u000431\u000440\u000430\u000436\u000435\u00043d\u000438\u000435 \u000441\u000442\u000430\u000442\u000443\u000441\u000430
+    // Отображение статусов
+    this.renderStatusEffects(ctx);
+  }
+
+  /**
+   * Отрисовка статусных эффектов
+   * @param {CanvasRenderingContext2D} ctx
+   * @private
+   */
   renderStatusEffects(ctx) {
     // statusEffects не существует в Player, метод будет реализован позже
     // Пока просто пропускаем отрисовку статусов
     return;
+  }
+
+  /**
+   * Отрисовка фона карты (пол и стены)
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {Camera} camera
+   * @private
+   */
+  renderMapBackground(ctx, camera) {
+    const startTileX = Math.floor(camera.x / this.tileSize);
+    const startTileY = Math.floor(camera.y / this.tileSize);
+    const endTileX = Math.ceil((camera.x + camera.game.width) / this.tileSize);
+    const endTileY = Math.ceil((camera.y + camera.game.height) / this.tileSize);
+    
+    for (let y = startTileY; y <= endTileY && y < this.height; y++) {
+      for (let x = startTileX; x <= endTileX && x < this.width; x++) {
+        const screenX = x * this.tileSize - camera.x;
+        const screenY = y * this.tileSize - camera.y;
+        
+        if (this.map[y] && this.map[y][x] === 1) {
+          // Стена - тёмно-синий блок
+          ctx.fillStyle = '#0a1628';
+          ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
+          ctx.strokeStyle = '#1a2a3a';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(screenX, screenY, this.tileSize, this.tileSize);
+        } else {
+          // Пол - просто серый с небольшим variation
+          const toneVariation = ((x + y) % 3) * 3;
+          ctx.fillStyle = `rgb(${35 + toneVariation}, ${35 + toneVariation}, ${40 + toneVariation})`;
+          ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
+        }
+      }
+    }
   }
 
   /**

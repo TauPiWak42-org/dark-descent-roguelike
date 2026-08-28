@@ -23,7 +23,7 @@ html, body {
   background: #0a0a0a;
   font-family: 'Georgia', serif;
   color: #e0d5c1;
-  cursor: none;
+  cursor: default;
 }
 
 /* \u000418\u000433\u000440\u00043e\u000432\u000430\u00044f \u00043e\u000431\u00043b\u000430\u000441\u000442\u00044c */
