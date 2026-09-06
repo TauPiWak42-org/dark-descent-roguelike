@@ -84,16 +84,11 @@ export class GameLoop {
     const deltaTime = currentTime - this.lastTime;
     this.lastTime = currentTime;
     
-    // Подсчёт FPS
-    this.fpsTimer += deltaTime;
-    this.fpsCounter++;
-    this.frameCount++;
-    
-    if (this.fpsTimer >= 1000) {
-      this.currentFps = this.fpsCounter;
-      this.averageFps = Math.round(this.frameCount / (this.fpsTimer / 1000));
-      this.fpsCounter = 0;
-      this.fpsTimer = 0;
+    // Лимитирование FPS по частоте экрана
+    const targetFrameTime = 1000 / this.fps;
+    if (deltaTime < targetFrameTime * 0.9) {
+      this.frameId = requestAnimationFrame(this.boundLoop);
+      return;
     }
     
     // Фиксированный шаг обновления
